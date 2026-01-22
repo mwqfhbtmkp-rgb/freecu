@@ -10,82 +10,124 @@
       background: #0f172a;
       color: white;
       text-align: center;
-      padding: 40px;
+      padding: 30px;
     }
-    h1 {
-      color: #38bdf8;
-    }
+    h1 { color: #38bdf8; }
     button {
-      font-size: 24px;
-      padding: 20px 40px;
-      margin-top: 20px;
+      font-size: 18px;
+      padding: 15px 30px;
+      margin: 10px;
       background: #22c55e;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
     }
     button:disabled {
       background: gray;
       cursor: not-allowed;
     }
-    .score {
-      font-size: 32px;
-      margin-top: 20px;
+    .score { font-size: 28px; margin: 15px 0; }
+    .wallet { font-size: 14px; word-break: break-all; margin-top: 10px; }
+    input {
+      padding: 10px;
+      width: 90%;
+      max-width: 400px;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
   <h1>FREECU Clicker</h1>
-  <p>Click as many times as you can in 30 seconds</p>
+  <p>Reach 100 clicks in 30 seconds</p>
 
+  <button id="connectBtn">Connect Wallet</button>
+  <div class="wallet" id="wallet"></div>
+
+  <button id="startBtn">Start Game</button>
   <button id="clickBtn" disabled>CLICK</button>
 
-  <div class="score">
-    Score: <span id="score">0</span>
-  </div>
-
+  <div class="score">Score: <span id="score">0</span></div>
   <p id="timer">Press Start</p>
 
-  <button id="startBtn">START</button>
+  <button id="claimBtn" disabled>Claim Reward</button>
+  <p id="claimStatus"></p>
 
-  <script>
-    let score = 0;
-    let timeLeft = 30;
-    let timer;
+<script>
+let score = 0;
+let timeLeft = 30;
+let timer;
+let userAccount = null;
 
-    const clickBtn = document.getElementById("clickBtn");
-    const startBtn = document.getElementById("startBtn");
-    const scoreSpan = document.getElementById("score");
-    const timerText = document.getElementById("timer");
+const clickBtn = document.getElementById("clickBtn");
+const startBtn = document.getElementById("startBtn");
+const scoreSpan = document.getElementById("score");
+const timerText = document.getElementById("timer");
+const connectBtn = document.getElementById("connectBtn");
+const walletDiv = document.getElementById("wallet");
+const claimBtn = document.getElementById("claimBtn");
+const claimStatus = document.getElementById("claimStatus");
 
-    clickBtn.addEventListener("click", () => {
-      score++;
-      scoreSpan.textContent = score;
+// Connect wallet
+connectBtn.onclick = async () => {
+  if (window.ethereum) {
+    const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+    userAccount = accounts[0];
+    walletDiv.textContent = "Wallet: " + userAccount;
+  } else {
+    alert("MetaMask not detected");
+  }
+};
+
+// Game logic
+clickBtn.onclick = () => {
+  score++;
+  scoreSpan.textContent = score;
+};
+
+startBtn.onclick = () => {
+  score = 0;
+  timeLeft = 30;
+  scoreSpan.textContent = score;
+  clickBtn.disabled = false;
+  claimBtn.disabled = true;
+  timerText.textContent = "Time: 30s";
+
+  timer = setInterval(() => {
+    timeLeft--;
+    timerText.textContent = "Time: " + timeLeft + "s";
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      clickBtn.disabled = true;
+      if (score >= 100 && userAccount) {
+        claimBtn.disabled = false;
+        claimStatus.textContent = "You passed! You can claim FREECU.";
+      } else {
+        claimStatus.textContent =
+          score >= 100
+            ? "Connect your wallet to claim."
+            : "Score too low. Try again.";
+      }
+    }
+  }, 1000);
+};
+
+// Claim (signature only)
+claimBtn.onclick = async () => {
+  const message = `FREECU CLAIM\nWallet: ${userAccount}\nScore: ${score}\nTime: ${new Date().toISOString()}`;
+  try {
+    const signature = await ethereum.request({
+      method: "personal_sign",
+      params: [message, userAccount]
     });
-
-    startBtn.addEventListener("click", () => {
-      score = 0;
-      timeLeft = 30;
-      scoreSpan.textContent = score;
-      clickBtn.disabled = false;
-      startBtn.disabled = true;
-      timerText.textContent = "Time: 30s";
-
-      timer = setInterval(() => {
-        timeLeft--;
-        timerText.textContent = "Time: " + timeLeft + "s";
-
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          clickBtn.disabled = true;
-          startBtn.disabled = false;
-          timerText.textContent =
-            "Finished! Screenshot your score and claim FREECU if you passed the challenge.";
-        }
-      }, 1000);
-    });
-  </script>
+    claimStatus.textContent =
+      "Claim signed! Send your wallet + score screenshot to receive FREECU.";
+    console.log("Signature:", signature);
+  } catch (err) {
+    claimStatus.textContent = "Signature rejected.";
+  }
+};
+</script>
 
 </body>
 </html>
