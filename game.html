@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FREECU Clicker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #38bdf8;
+    }
+    button {
+      font-size: 24px;
+      padding: 20px 40px;
+      margin-top: 20px;
+      background: #22c55e;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+    .score {
+      font-size: 32px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FREECU Clicker</h1>
+  <p>Click as many times as you can in 30 seconds</p>
+
+  <button id="clickBtn" disabled>CLICK</button>
+
+  <div class="score">
+    Score: <span id="score">0</span>
+  </div>
+
+  <p id="timer">Press Start</p>
+
+  <button id="startBtn">START</button>
+
+  <script>
+    let score = 0;
+    let timeLeft = 30;
+    let timer;
+
+    const clickBtn = document.getElementById("clickBtn");
+    const startBtn = document.getElementById("startBtn");
+    const scoreSpan = document.getElementById("score");
+    const timerText = document.getElementById("timer");
+
+    clickBtn.addEventListener("click", () => {
+      score++;
+      scoreSpan.textContent = score;
+    });
+
+    startBtn.addEventListener("click", () => {
+      score = 0;
+      timeLeft = 30;
+      scoreSpan.textContent = score;
+      clickBtn.disabled = false;
+      startBtn.disabled = true;
+      timerText.textContent = "Time: 30s";
+
+      timer = setInterval(() => {
+        timeLeft--;
+        timerText.textContent = "Time: " + timeLeft + "s";
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          clickBtn.disabled = true;
+          startBtn.disabled = false;
+          timerText.textContent =
+            "Finished! Screenshot your score and claim FREECU if you passed the challenge.";
+        }
+      }, 1000);
+    });
+  </script>
+
+</body>
+</html>
