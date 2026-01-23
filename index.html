@@ -2,79 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FREECU | Gaming Token on Polygon</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FREECU</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body <!-- HERO SECTION -->
-<section style="
-  text-align:center;
-  padding:80px 20px 60px;
-  background: radial-gradient(circle at top, #020617, #000000);
-">
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      text-align: center;
+    }
 
-  <h1 style="
-    font-size:56px;
-    font-weight:800;
-    color:#22c55e;
-    margin-bottom:20px;
-    letter-spacing:2px;
-  ">
-    FREECU
-  </h1>
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-  <h2 style="
-    font-size:22px;
-    font-weight:400;
-    color:#e5e7eb;
-    margin-bottom:20px;
-  ">
-    A Polygon token connected to a simple clicker game
-  </h2>
+    .hero {
+      padding: 80px 20px 60px;
+      background: radial-gradient(circle at top, #020617, #000000);
+    }
 
-  <p style="
-    max-width:600px;
-    margin:0 auto 35px;
-    font-size:16px;
-    line-height:1.6;
-    color:#94a3b8;
-  ">
-    Play the game, explore the project, and decide if you want to participate.
-    FREECU is an early-stage experimental project focused on transparency
-    and community-driven growth.
-  </p>
+    .hero h1 {
+      font-size: 56px;
+      color: #22c55e;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
 
-  <div style="margin-top:30px;">
-    <a href="#game" style="
-      display:inline-block;
-      padding:14px 36px;
-      margin:10px;
-      font-size:18px;
-      font-weight:bold;
-      color:#ffffff;
-      background:#22c55e;
-      border-radius:12px;
-      text-decoration:none;
-      box-shadow:0 0 20px rgba(34,197,94,0.35);
-    ">
-      🎮 Play the Game
-    </a>
+    .hero h2 {
+      font-size: 22px;
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
 
-    <a href="https://quickswap.exchange/#/swap?outputCurrency=0x9C8B1BED1fbA0869413fe95470457B5d5DdDF732"
-       target="_blank"
-       style="
-        display:inline-block;
-        padding:14px 36px;
-        margin:10px;
-        font-size:18px;
-        font-weight:bold;
-        color:#38bdf8;
-        background:#020617;
-        border:1px solid #38bdf8;
-        border-radius:12px;
-        text-decoration:none;
-       ">
-      🟢 Buy FREECU
-    </a>
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto 35px;
+      font-size: 16px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .buttons a {
+      display: inline-block;
+      margin: 10px;
+      padding: 14px 36px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 12px;
+    }
+
+    .play {
+      background: #22c55e;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(34,197,94,0.35);
+    }
+
+    .buy {
+      background: #020617;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+    }
+
+    .section {
+      padding: 60px 20px;
+    }
+
+    footer {
+      font-size: 13px;
+      color: #64748b;
+      padding: 40px 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>FREECU</h1>
+    <h2>A Polygon token connected to a simple clicker game</h2>
+    <p>
+      Play the game, explore the project, and decide if you want to participate.
+      FREECU is an early-stage experimental project focused on transparency
+      and community-driven growth.
+    </p>
+
+    <div class="buttons">
+      <a href="#game" class="play">🎮 Play the Game</a>
+      <a href="https://quickswap.exchange/#/swap?outputCurrency=0x9C8B1BED1fbA0869413fe95470457B5d5DdDF732"
+         target="_blank" class="buy">🟢 Buy FREECU</a>
+    </div>
   </div>
 
-</section>
+  <!-- GAME PLACEHOLDER -->
+  <div id="game" class="section">
+    <h2>🎮 FREECU Clicker</h2>
+    <p>
+      The game will appear here.<br>
+      Play, test, and participate in the project.
+    </p>
+  </div>
+
+  <!-- INFO -->
+  <div class="section">
+    <p>Network: Polygon</p>
+    <p>DEX: QuickSwap V2</p>
+    <p>
+      Contract:<br>
+      <span style="font-family:monospace;">
+        0x9C8B1BED1fbA0869413fe95470457B5d5DdDF732
+      </span>
+    </p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    FREECU is an experimental crypto project.<br>
+    No financial promises. Always do your own research.
+  </footer>
+
+</body>
+</html>
