@@ -80,20 +80,65 @@
 
 <body>
   
-  <!-- TOP NAVIGATION -->
-<nav style="
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: #020617;
-  border-bottom: 1px solid #0f172a;
-  padding: 14px 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 1000;
-">
+  
+  <!-- HEADER WITH DROPDOWN MENU -->
+<div style="text-align:left; padding:20px 20px 10px;">
+
+  <!-- LOGO -->
+  <div style="
+    font-size:28px;
+    font-weight:800;
+    color:#22c55e;
+    letter-spacing:2px;
+  ">
+    FREECU
+  </div>
+
+  <!-- MENU BUTTON -->
+  <div style="position: relative; display: inline-block; margin-top: 10px;">
+    <button onclick="toggleMenu()" style="
+      background: none;
+      border: none;
+      color: #e5e7eb;
+      font-size: 26px;
+      cursor: pointer;
+    ">
+      ⋮
+    </button>
+
+    <!-- DROPDOWN -->
+    <div id="menuDropdown" style="
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 40px;
+      background: #020617;
+      border: 1px solid #0f172a;
+      border-radius: 10px;
+      min-width: 160px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      z-index: 100;
+    ">
+
+      <a href="#" style="display:block; padding:12px; color:#e5e7eb;">Home</a>
+      <a href="#game" style="display:block; padding:12px; color:#e5e7eb;">Game</a>
+      <a href="https://quickswap.exchange/#/swap?outputCurrency=0x9C8B1BED1fbA0869413fe95470457B5d5DdDF732"
+         target="_blank"
+         style="display:block; padding:12px; color:#22c55e; font-weight:bold;">
+         Buy FREECU
+      </a>
+      <a href="https://dexscreener.com/polygon"
+         target="_blank"
+         style="display:block; padding:12px; color:#38bdf8;">
+         Chart
+      </a>
+      <a href="#" style="display:block; padding:12px; color:#94a3b8;">
+         Docs (soon)
+      </a>
+
+    </div>
+  </div>
+</div>
 
   <!-- LOGO -->
   <div style="
