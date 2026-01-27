@@ -65,9 +65,15 @@
     }
 
     .score {
-      
       font-size: 20px;
       margin-top: 10px;
+    }
+
+    #gameOver {
+      display: none;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #e5e7eb;
     }
 
     a {
@@ -91,8 +97,9 @@
     <div id="obstacle"></div>
   </div>
 
-  <div class="info">Press SPACE to jump</div>
+  <div class="info">Press SPACE or TAP to jump</div>
   <div class="score">Score: <span id="score">0</span></div>
+  <div id="gameOver">Game Over — press R or TAP to restart</div>
 
   <a href="index.html">← Back to home</a>
 
@@ -100,27 +107,34 @@
     const player = document.getElementById("player");
     const obstacle = document.getElementById("obstacle");
     const scoreEl = document.getElementById("score");
+    const gameOverEl = document.getElementById("gameOver");
+    const gameArea = document.getElementById("gameArea");
 
     let isJumping = false;
     let position = 20;
     let obstacleX = 500;
     let score = 0;
     let speed = 4;
+    let running = true;
 
-    document.addEventListener("keydown", function (e) {
-      if (e.code === "Space" && !isJumping) {
-        jump();
-      }
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && !isJumping && running) jump();
+      if (e.code === "KeyR" && !running) resetGame();
+    });
+
+    gameArea.addEventListener("touchstart", () => {
+      if (!isJumping && running) jump();
+      else if (!running) resetGame();
     });
 
     function jump() {
       isJumping = true;
-      let upInterval = setInterval(() => {
+      let up = setInterval(() => {
         if (position >= 90) {
-          clearInterval(upInterval);
-          let downInterval = setInterval(() => {
+          clearInterval(up);
+          let down = setInterval(() => {
             if (position <= 20) {
-              clearInterval(downInterval);
+              clearInterval(down);
               isJumping = false;
             }
             position -= 5;
@@ -132,41 +146,31 @@
       }, 20);
     }
 
+    function resetGame() {
+      obstacleX = 500;
+      score = 0;
+      speed = 4;
+      running = true;
+      scoreEl.textContent = score;
+      gameOverEl.style.display = "none";
+    }
+
     function gameLoop() {
-      obstacleX -= speed;
-      obstacle.style.right = obstacleX + "px";
+      if (running) {
+        obstacleX -= speed;
+        obstacle.style.right = obstacleX + "px";
 
-      if (obstacleX < -20) {
-        obstacleX = 500;
-        score++;
-        scoreEl.textContent = score;
-
-        if (score % 5 === 0) {
-          speed += 0.5;
+        if (obstacleX < -20) {
+          obstacleX = 500;
+          score++;
+          scoreEl.textContent = score;
+          if (score % 5 === 0) speed += 0.5;
         }
-      }
 
-      // Collision detection
-      if (
-  obstacleX < 80 &&
-  obstacleX > 40 &&
-  position < 50
-) {
-  document.getElementById("gameOver").style.display = "block";
-  speed = 0;
-}
-        obstacleX = 500;
-        score = 0;
-        <div id="gameOver" style="
-  display:none;
-  margin-top:20px;
-  font-size:18px;
-  color:#e5e7eb;
-">
-  Game Over — press R to restart
-</div>
-        speed = 4;
-        scoreEl.textContent = score;
+        if (obstacleX < 80 && obstacleX > 40 && position < 50) {
+          running = false;
+          gameOverEl.style.display = "block";
+        }
       }
 
       requestAnimationFrame(gameLoop);
@@ -174,16 +178,6 @@
 
     gameLoop();
   </script>
-  document.addEventListener("keydown", function (e) {
-  if (e.code === "KeyR" && speed === 0) {
-    obstacleX = 500;
-    score = 0;
-    speed = 4;
-    scoreEl.textContent = score;
-    document.getElementById("gameOver").style.display = "none";
-  }
-});
 
 </body>
 </html>
-
