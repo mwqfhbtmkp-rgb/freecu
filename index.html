@@ -1,164 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>FREECU — Experimental Gaming Project</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>FREECU — Experimental Gaming Project</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    :root {
-      --bg-main: #020617;
-      --bg-soft: #020617;
-      --border-soft: #0f172a;
-      --text-main: #e5e7eb;
-      --text-soft: #94a3b8;
-      --accent: #22c55e;
-      --accent-blue: #38bdf8;
-    }
+<style>
+  :root {
+    --bg-main: #020617;
+    --bg-dark: #000000;
+    --border-soft: #0f172a;
+    --text-main: #e5e7eb;
+    --text-soft: #94a3b8;
+    --accent: #22c55e;
+    --accent-blue: #38bdf8;
+  }
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg-main);
-      color: var(--text-main);
-      text-align: center;
-    }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg-main);
+    color: var(--text-main);
+    text-align: center;
+  }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-    /* HEADER */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px;
-      border-bottom: 1px solid var(--border-soft);
-    }
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border-soft);
+  }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-    .logo img {
-      width: 36px;
-    }
+  .header-brand img.icon {
+    width: 32px;
+    height: auto;
+  }
 
-    .logo span {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: var(--accent);
-    }
+  .header-brand img.text {
+    width: 110px;
+    height: auto;
+  }
 
-    nav a {
-      margin-left: 20px;
-      font-size: 14px;
-      color: var(--text-soft);
-    }
+  nav a {
+    margin-left: 20px;
+    font-size: 14px;
+    color: var(--text-soft);
+  }
 
-    nav a.cta {
-      color: var(--accent);
-      font-weight: bold;
-    }
+  nav a.cta {
+    color: var(--accent);
+    font-weight: bold;
+  }
 
-    /* HERO */
-    .hero {
-      padding: 90px 20px 70px;
-      background: radial-gradient(circle at top, #020617, #000000);
-    }
+  /* HERO */
+  .hero {
+    padding: 100px 20px 80px;
+    background: radial-gradient(circle at top, var(--bg-main), var(--bg-dark));
+  }
 
-    .hero h1 {
-      font-size: 56px;
-      color: var(--accent);
-      margin-bottom: 20px;
-      letter-spacing: 2px;
-    }
+  .brand-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 32px;
+  }
 
-    .hero p {
-      max-width: 620px;
-      margin: 0 auto 40px;
-      font-size: 16px;
-      color: var(--text-soft);
-      line-height: 1.6;
-    }
+  .brand-center img.icon {
+    width: 96px;
+  }
 
-    .hero .cta {
-      display: inline-block;
-      padding: 14px 36px;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #020617;
-      box-shadow: 0 0 20px rgba(34,197,94,0.35);
-    }
+  .brand-center img.text {
+    width: 240px;
+  }
 
-    /* SECTIONS */
-    .section {
-      padding: 70px 20px;
-    }
+  .hero p {
+    max-width: 620px;
+    margin: 0 auto 40px;
+    font-size: 16px;
+    color: var(--text-soft);
+    line-height: 1.6;
+  }
 
-    .section h2 {
-      font-size: 32px;
-      color: var(--accent);
-      margin-bottom: 25px;
-    }
+  .hero .cta {
+    display: inline-block;
+    padding: 14px 36px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #020617;
+    box-shadow: 0 0 20px rgba(34,197,94,0.35);
+  }
 
-    .section p {
-      max-width: 700px;
-      margin: 0 auto;
-      font-size: 16px;
-      line-height: 1.7;
-      color: var(--text-main);
-    }
+  /* SECTIONS */
+  .section {
+    padding: 70px 20px;
+  }
 
-    .muted {
-      color: var(--text-soft);
-      font-size: 15px;
-      margin-top: 20px;
-    }
+  .section h2 {
+    font-size: 32px;
+    color: var(--accent);
+    margin-bottom: 25px;
+  }
 
-    /* ROADMAP */
-    .card {
-      max-width: 700px;
-      margin: 25px auto;
-      padding: 22px;
-      border: 1px solid var(--border-soft);
-      border-radius: 14px;
-      text-align: left;
-    }
+  .section p {
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
 
-    .card h3 {
-      color: var(--accent-blue);
-      margin-bottom: 10px;
-    }
+  .muted {
+    color: var(--text-soft);
+    font-size: 15px;
+    margin-top: 20px;
+  }
 
-    .card ul {
-      padding-left: 18px;
-      color: var(--text-main);
-    }
+  /* ROADMAP */
+  .card {
+    max-width: 700px;
+    margin: 25px auto;
+    padding: 22px;
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    text-align: left;
+  }
 
-    /* FOOTER */
-    footer {
-      font-size: 13px;
-      color: #64748b;
-      padding: 40px 20px;
-      border-top: 1px solid var(--border-soft);
+  .card h3 {
+    color: var(--accent-blue);
+    margin-bottom: 10px;
+  }
+
+  .card ul {
+    padding-left: 18px;
+    color: var(--text-main);
+  }
+
+  /* FOOTER */
+  footer {
+    font-size: 13px;
+    color: #64748b;
+    padding: 40px 20px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  /* MOBILE */
+  @media (max-width: 480px) {
+    .brand-center img.icon { width: 80px; }
+    .brand-center img.text { width: 200px; }
+
+    .header-brand img.text {
+      width: 90px;
     }
-  </style>
+  }
+</style>
 </head>
 
 <body>
 
 <header>
-  <div class="logo">
-    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png" alt="FREECU logo">
-    <span>FREECU</span>
+  <div class="header-brand">
+    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png" alt="FREECU logo" class="icon">
+    <img src="2CD41450-C2C6-4AF2-9100-A1C7E467E881.png" alt="FREECU" class="text">
   </div>
 
   <nav>
@@ -173,11 +191,16 @@
 </header>
 
 <section class="hero">
-  <h1>FREECU</h1>
+  <div class="brand-center">
+    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png" alt="FREECU logo" class="icon">
+    <img src="2CD41450-C2C6-4AF2-9100-A1C7E467E881.png" alt="FREECU" class="text">
+  </div>
+
   <p>
     An experimental gaming-related crypto project.<br>
     Built in public. No promises.
   </p>
+
   <a href="game.html" class="cta">Play the prototype</a>
 </section>
 
@@ -199,9 +222,6 @@
   <p>
     A simple runner-style game built as an early prototype.
     The goal is to test ideas, not to offer rewards.
-  </p>
-  <p class="muted">
-    You can play it directly in your browser.
   </p>
 </section>
 
