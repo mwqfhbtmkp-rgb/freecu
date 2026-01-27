@@ -160,14 +160,33 @@
         obstacleX -= speed;
         obstacle.style.right = obstacleX + "px";
 
-        if (obstacleX < -20) {
-          obstacleX = 500;
-          score++;
-          scoreEl.textContent = score;
-          if (score % 5 === 0) speed += 0.5;
-        }
+        if (obstacleX < -40) {
+  obstacleX = 500 + Math.random() * 300;
 
-        if (obstacleX < 80 && obstacleX > 40 && position < 50) {
+  // obstacle size variation
+  const height = 20 + Math.random() * 40;
+  const width = 15 + Math.random() * 20;
+
+  obstacle.style.height = height + "px";
+  obstacle.style.width = width + "px";
+
+  score++;
+  scoreEl.textContent = score;
+
+  if (score % 5 === 0) speed += 0.4;
+  speed += 0.0008;
+}
+
+const obstacleHeight = obstacle.offsetHeight;
+
+if (
+  obstacleX < 80 &&
+  obstacleX > 30 &&
+  position < 20 + obstacleHeight
+) {
+  running = false;
+  gameOverEl.style.display = "block";
+}
           running = false;
           gameOverEl.style.display = "block";
         }
