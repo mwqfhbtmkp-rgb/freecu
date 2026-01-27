@@ -6,176 +6,175 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  :root {
-    --bg-main: #020617;
-    --bg-dark: #000000;
-    --border-soft: #0f172a;
-    --text-main: #e5e7eb;
-    --text-soft: #94a3b8;
-    --accent: #22c55e;
-    --accent-blue: #38bdf8;
-  }
+:root {
+  --bg-main: #020617;
+  --bg-dark: #000000;
+  --border-soft: #0f172a;
+  --text-main: #e5e7eb;
+  --text-soft: #94a3b8;
+  --accent: #22c55e;
+  --accent-blue: #38bdf8;
+}
 
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: var(--bg-main);
-    color: var(--text-main);
-    text-align: center;
-  }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  text-align: center;
+}
 
-  a { color: inherit; text-decoration: none; }
+a { color: inherit; text-decoration: none; }
 
-  /* ================= HEADER ================= */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 24px;
-    border-bottom: 1px solid var(--border-soft);
-  }
+/* ================= HEADER ================= */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-soft);
+}
 
-  .header-brand {
-    display: flex;
-    align-items: center;
-    gap: 6px; /* MUY IMPORTANTE: compacto */
-  }
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* MUY PEGADO */
+}
 
-  .header-brand img.icon {
-    width: 36px;
-  }
+.header-brand img.icon {
+  width: 40px;
+}
 
-  .header-brand img.text {
-    width: 120px;
-  }
+.header-brand img.text {
+  width: 140px;
+}
 
-  nav a {
-    margin-left: 20px;
-    font-size: 14px;
-    color: var(--text-soft);
-  }
+nav a {
+  margin-left: 20px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
 
-  nav a.cta {
-    color: var(--accent);
-    font-weight: bold;
-  }
+nav a.cta {
+  color: var(--accent);
+  font-weight: bold;
+}
 
-  /* ================= HERO ================= */
-  .hero {
-    padding: 110px 20px 90px;
-    background: radial-gradient(circle at top, var(--bg-main), var(--bg-dark));
-  }
+/* ================= HERO ================= */
+.hero {
+  padding: 120px 20px 100px;
+  background: radial-gradient(circle at top, var(--bg-main), var(--bg-dark));
+}
 
+.brand-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; /* CLAVE: se leen como UNO */
+  margin-bottom: 40px;
+}
+
+.brand-center img.icon {
+  width: 180px;
+}
+
+.brand-center img.text {
+  width: 420px;
+}
+
+.hero p {
+  max-width: 620px;
+  margin: 0 auto 46px;
+  font-size: 16px;
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+.hero .cta {
+  display: inline-block;
+  padding: 16px 42px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #020617;
+  box-shadow: 0 0 20px rgba(34,197,94,0.35);
+}
+
+/* ================= SECTIONS ================= */
+.section {
+  padding: 70px 20px;
+}
+
+.section h2 {
+  font-size: 32px;
+  color: var(--accent);
+  margin-bottom: 25px;
+}
+
+.section p {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.muted {
+  color: var(--text-soft);
+  font-size: 15px;
+  margin-top: 20px;
+}
+
+/* ================= ROADMAP ================= */
+.card {
+  max-width: 700px;
+  margin: 25px auto;
+  padding: 22px;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  text-align: left;
+}
+
+.card h3 {
+  color: var(--accent-blue);
+  margin-bottom: 10px;
+}
+
+.card ul {
+  padding-left: 18px;
+}
+
+/* ================= FOOTER ================= */
+footer {
+  font-size: 13px;
+  color: #64748b;
+  padding: 40px 20px;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 640px) {
   .brand-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;            /* CLAVE: unión visual */
-    margin-bottom: 34px;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .brand-center img.icon {
-    width: 140px;         /* ICONO FUERTE */
+    width: 130px;
   }
 
   .brand-center img.text {
-    width: 360px;         /* WORDMARK PROTAGONISTA */
+    width: 300px;
   }
 
-  .hero p {
-    max-width: 620px;
-    margin: 0 auto 42px;
-    font-size: 16px;
-    color: var(--text-soft);
-    line-height: 1.6;
+  .header-brand img.icon {
+    width: 32px;
   }
 
-  .hero .cta {
-    display: inline-block;
-    padding: 14px 38px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 10px;
-    background: var(--accent);
-    color: #020617;
-    box-shadow: 0 0 20px rgba(34,197,94,0.35);
+  .header-brand img.text {
+    width: 110px;
   }
-
-  /* ================= SECTIONS ================= */
-  .section {
-    padding: 70px 20px;
-  }
-
-  .section h2 {
-    font-size: 32px;
-    color: var(--accent);
-    margin-bottom: 25px;
-  }
-
-  .section p {
-    max-width: 700px;
-    margin: 0 auto;
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text-main);
-  }
-
-  .muted {
-    color: var(--text-soft);
-    font-size: 15px;
-    margin-top: 20px;
-  }
-
-  /* ================= ROADMAP ================= */
-  .card {
-    max-width: 700px;
-    margin: 25px auto;
-    padding: 22px;
-    border: 1px solid var(--border-soft);
-    border-radius: 14px;
-    text-align: left;
-  }
-
-  .card h3 {
-    color: var(--accent-blue);
-    margin-bottom: 10px;
-  }
-
-  .card ul {
-    padding-left: 18px;
-  }
-
-  /* ================= FOOTER ================= */
-  footer {
-    font-size: 13px;
-    color: #64748b;
-    padding: 40px 20px;
-    border-top: 1px solid var(--border-soft);
-  }
-
-  /* ================= MOBILE ================= */
-  @media (max-width: 640px) {
-    .brand-center {
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .brand-center img.icon {
-      width: 100px;
-    }
-
-    .brand-center img.text {
-      width: 260px;
-    }
-
-    .header-brand img.icon {
-      width: 28px;
-    }
-
-    .header-brand img.text {
-      width: 90px;
-    }
-  }
+}
 </style>
 </head>
 
@@ -217,55 +216,14 @@
     simple web games and crypto culture.
   </p>
   <p class="muted">
-    The project focuses on transparency, learning in public,
-    and iterating step by step based on real feedback.
+    Transparency, learning in public, and steady iteration.
+    No financial promises.
   </p>
-</section>
-
-<section class="section">
-  <h2>Prototype Game</h2>
-  <p>
-    A simple runner-style game built as an early prototype.
-    The goal is to test ideas, not to offer rewards.
-  </p>
-</section>
-
-<section class="section">
-  <h2>Roadmap</h2>
-
-  <div class="card">
-    <h3>Phase 1 — Foundation</h3>
-    <ul>
-      <li>Token deployed on Polygon</li>
-      <li>Liquidity added</li>
-      <li>Website live</li>
-      <li>Prototype game released</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h3>Phase 2 — Iteration</h3>
-    <ul>
-      <li>Gameplay improvements</li>
-      <li>Website refinement</li>
-      <li>Community feedback</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h3>Phase 3 — Exploration</h3>
-    <ul>
-      <li>Experiment with utility concepts</li>
-      <li>Optional in-game interactions</li>
-      <li>Documentation</li>
-    </ul>
-  </div>
 </section>
 
 <footer>
   FREECU is an experimental project. Nothing here is financial advice.<br>
-  © 2026 FREECU. All rights reserved.<br>
-  The FREECU name and logo are original works created for this project.
+  © 2026 FREECU. All rights reserved.
 </footer>
 
 </body>
