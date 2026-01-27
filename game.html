@@ -65,6 +65,7 @@
     }
 
     .score {
+      
       font-size: 20px;
       margin-top: 10px;
     }
@@ -147,13 +148,23 @@
 
       // Collision detection
       if (
-        obstacleX < 80 &&
-        obstacleX > 40 &&
-        position < 50
-      ) {
-        alert("Game over! Score: " + score);
+  obstacleX < 80 &&
+  obstacleX > 40 &&
+  position < 50
+) {
+  document.getElementById("gameOver").style.display = "block";
+  speed = 0;
+}
         obstacleX = 500;
         score = 0;
+        <div id="gameOver" style="
+  display:none;
+  margin-top:20px;
+  font-size:18px;
+  color:#e5e7eb;
+">
+  Game Over — press R to restart
+</div>
         speed = 4;
         scoreEl.textContent = score;
       }
@@ -163,6 +174,15 @@
 
     gameLoop();
   </script>
+  document.addEventListener("keydown", function (e) {
+  if (e.code === "KeyR" && speed === 0) {
+    obstacleX = 500;
+    score = 0;
+    speed = 4;
+    scoreEl.textContent = score;
+    document.getElementById("gameOver").style.display = "none";
+  }
+});
 
 </body>
 </html>
