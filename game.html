@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FREECU Game</title>
+  <title>FREECU Runner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -17,7 +17,7 @@
 
     h1 {
       font-size: 42px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .subtitle {
@@ -90,4 +90,80 @@
     <div id="obstacle"></div>
   </div>
 
-  <div class="info">Press SPACE to jump</div
+  <div class="info">Press SPACE to jump</div>
+  <div class="score">Score: <span id="score">0</span></div>
+
+  <a href="index.html">← Back to home</a>
+
+  <script>
+    const player = document.getElementById("player");
+    const obstacle = document.getElementById("obstacle");
+    const scoreEl = document.getElementById("score");
+
+    let isJumping = false;
+    let position = 20;
+    let obstacleX = 500;
+    let score = 0;
+    let speed = 4;
+
+    document.addEventListener("keydown", function (e) {
+      if (e.code === "Space" && !isJumping) {
+        jump();
+      }
+    });
+
+    function jump() {
+      isJumping = true;
+      let upInterval = setInterval(() => {
+        if (position >= 90) {
+          clearInterval(upInterval);
+          let downInterval = setInterval(() => {
+            if (position <= 20) {
+              clearInterval(downInterval);
+              isJumping = false;
+            }
+            position -= 5;
+            player.style.bottom = position + "px";
+          }, 20);
+        }
+        position += 5;
+        player.style.bottom = position + "px";
+      }, 20);
+    }
+
+    function gameLoop() {
+      obstacleX -= speed;
+      obstacle.style.right = obstacleX + "px";
+
+      if (obstacleX < -20) {
+        obstacleX = 500;
+        score++;
+        scoreEl.textContent = score;
+
+        if (score % 5 === 0) {
+          speed += 0.5;
+        }
+      }
+
+      // Collision detection
+      if (
+        obstacleX < 80 &&
+        obstacleX > 40 &&
+        position < 50
+      ) {
+        alert("Game over! Score: " + score);
+        obstacleX = 500;
+        score = 0;
+        speed = 4;
+        scoreEl.textContent = score;
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+
+</body>
+</html>
+
