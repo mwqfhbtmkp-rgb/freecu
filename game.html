@@ -100,7 +100,7 @@ gameArea.addEventListener("touchstart", () => {
 // Jump
 function jump() {
   if (!jumping) {
-    velocity = 10;
+    velocity = 11.5;
     jumping = true;
   }
 }
@@ -109,8 +109,13 @@ function jump() {
 function createObstacle() {
   const obs = document.createElement("div");
   obs.className = "obstacle";
-  obs.style.width = 15 + Math.random() * 25 + "px";
-  obs.style.height = 20 + Math.random() * 50 + "px";
+
+  // Width: variable but fair
+  obs.style.width = 18 + Math.random() * 22 + "px";
+
+  // Height: LIMITED so all obstacles are jumpable
+  obs.style.height = 20 + Math.random() * 30 + "px";
+
   obs.style.left = gameArea.offsetWidth + "px";
   gameArea.appendChild(obs);
   obstacles.push(obs);
@@ -151,11 +156,10 @@ function loop() {
       obs.style.left = x + "px";
 
       // Collision
-      const obsHeight = obs.offsetHeight;
-      if (x < 70 && x > 30 && position < 20 + obsHeight) {
-        running = false;
-        gameOverEl.style.display = "block";
-      }
+      if (x < 65 && x > 35 && position < 18 + obsHeight) {
+  running = false;
+  gameOverEl.style.display = "block";
+}
 
       // Remove
       if (x < -50) {
