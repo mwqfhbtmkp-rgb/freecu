@@ -77,7 +77,7 @@ const gameOverEl = document.getElementById("gameOver");
 
 let position = 20;
 let velocity = 0;
-let gravity = 0.6;
+let gravity = 0.8;     // CLAVE: evita flotación
 let jumping = false;
 
 let obstacles = [];
@@ -86,7 +86,7 @@ let score = 0;
 let speed = 3;
 let running = true;
 
-// Controls
+// CONTROLES
 document.addEventListener("keydown", e => {
   if (e.code === "Space" && running) jump();
   if (e.code === "KeyR" && !running) resetGame();
@@ -97,7 +97,7 @@ gameArea.addEventListener("touchstart", () => {
   else resetGame();
 });
 
-// Jump
+// SALTO (impulso limpio)
 function jump() {
   if (!jumping) {
     velocity = 10;
@@ -105,23 +105,18 @@ function jump() {
   }
 }
 
-// Create obstacle
+// CREAR OBSTÁCULOS (JUSTOS)
 function createObstacle() {
   const obs = document.createElement("div");
   obs.className = "obstacle";
-
-  // Width: variable but fair
   obs.style.width = 18 + Math.random() * 22 + "px";
-
-  // Height: LIMITED so all obstacles are jumpable
   obs.style.height = 20 + Math.random() * 30 + "px";
-
   obs.style.left = gameArea.offsetWidth + "px";
   gameArea.appendChild(obs);
   obstacles.push(obs);
 }
 
-// Reset
+// RESET
 function resetGame() {
   obstacles.forEach(o => o.remove());
   obstacles = [];
@@ -135,33 +130,38 @@ function resetGame() {
   gameOverEl.style.display = "none";
 }
 
-// Loop
+// LOOP PRINCIPAL
 function loop() {
   if (running) {
-    // Player physics
+
+    // FÍSICA (FIX DEFINITIVO)
     velocity -= gravity;
     position += velocity;
+
     if (position <= 20) {
       position = 20;
       velocity = 0;
       jumping = false;
     }
+
     player.style.bottom = position + "px";
 
-    // Obstacles
+    // OBSTÁCULOS
     if (frame % 120 === 0) createObstacle();
 
     obstacles.forEach((obs, i) => {
       let x = obs.offsetLeft - speed;
       obs.style.left = x + "px";
 
-      // Collision
-      if (x < 65 && x > 35 && position < 18 + obsHeight) {
-  running = false;
-  gameOverEl.style.display = "block";
-}
+      const obsHeight = obs.offsetHeight;
 
-      // Remove
+      // COLISIÓN JUSTA
+      if (x < 65 && x > 35 && position < 18 + obsHeight) {
+        running = false;
+        gameOverEl.style.display = "block";
+      }
+
+      // ELIMINAR OBSTÁCULO
       if (x < -50) {
         obs.remove();
         obstacles.splice(i, 1);
