@@ -1,202 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>FREECU Runner</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>FREECU Runner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #020617;
-      color: #e5e7eb;
-      text-align: center;
-      padding: 40px 20px;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #020617;
+    color: #e5e7eb;
+    text-align: center;
+    padding: 40px 20px;
+  }
 
-    h1 {
-      font-size: 42px;
-      margin-bottom: 8px;
-    }
+  h1 { font-size: 42px; margin-bottom: 6px; }
+  .subtitle { color:#94a3b8; font-size:14px; margin-bottom:30px; }
 
-    .subtitle {
-      color: #94a3b8;
-      font-size: 14px;
-      margin-bottom: 30px;
-    }
+  #gameArea {
+    width:100%;
+    max-width:520px;
+    height:220px;
+    border:1px solid #0f172a;
+    border-radius:12px;
+    margin:0 auto;
+    position:relative;
+    overflow:hidden;
+  }
 
-    #gameArea {
-      width: 100%;
-      max-width: 500px;
-      height: 200px;
-      border: 1px solid #0f172a;
-      border-radius: 12px;
-      background: #020617;
-      margin: 30px auto;
-      position: relative;
-      overflow: hidden;
-    }
+  #player {
+    width:30px;
+    height:30px;
+    background:#22c55e;
+    position:absolute;
+    bottom:20px;
+    left:40px;
+    border-radius:6px;
+  }
 
-    #player {
-      width: 30px;
-      height: 30px;
-      background: #22c55e;
-      position: absolute;
-      bottom: 20px;
-      left: 40px;
-      border-radius: 6px;
-    }
+  .obstacle {
+    position:absolute;
+    bottom:20px;
+    background:#e5e7eb;
+    border-radius:4px;
+  }
 
-    #obstacle {
-      width: 20px;
-      height: 40px;
-      background: #e5e7eb;
-      position: absolute;
-      bottom: 20px;
-      right: -20px;
-      border-radius: 4px;
-    }
+  .info { margin-top:20px; color:#94a3b8; font-size:14px; }
+  .score { margin-top:10px; font-size:20px; }
+  #gameOver { display:none; margin-top:15px; font-size:18px; }
 
-    .info {
-      font-size: 14px;
-      color: #94a3b8;
-      margin-top: 20px;
-    }
-
-    .score {
-      font-size: 20px;
-      margin-top: 10px;
-    }
-
-    #gameOver {
-      display: none;
-      margin-top: 20px;
-      font-size: 18px;
-      color: #e5e7eb;
-    }
-
-    a {
-      display: block;
-      margin-top: 40px;
-      color: #38bdf8;
-      text-decoration: none;
-    }
-  </style>
+  a { display:block; margin-top:35px; color:#38bdf8; text-decoration:none; }
+</style>
 </head>
 
 <body>
 
-  <h1>FREECU Runner</h1>
-  <div class="subtitle">
-    Early prototype — no rewards, no tokens, no promises.
-  </div>
+<h1>FREECU Runner</h1>
+<div class="subtitle">Early prototype — no rewards, no tokens, no promises.</div>
 
-  <div id="gameArea">
-    <div id="player"></div>
-    <div id="obstacle"></div>
-  </div>
+<div id="gameArea">
+  <div id="player"></div>
+</div>
 
-  <div class="info">Press SPACE or TAP to jump</div>
-  <div class="score">Score: <span id="score">0</span></div>
-  <div id="gameOver">Game Over — press R or TAP to restart</div>
+<div class="info">SPACE or TAP to jump</div>
+<div class="score">Score: <span id="score">0</span></div>
+<div id="gameOver">Game Over — press R or TAP to restart</div>
 
-  <a href="index.html">← Back to home</a>
+<a href="index.html">← Back to home</a>
 
-  <script>
-    const player = document.getElementById("player");
-    const obstacle = document.getElementById("obstacle");
-    const scoreEl = document.getElementById("score");
-    const gameOverEl = document.getElementById("gameOver");
-    const gameArea = document.getElementById("gameArea");
+<script>
+const gameArea = document.getElementById("gameArea");
+const player = document.getElementById("player");
+const scoreEl = document.getElementById("score");
+const gameOverEl = document.getElementById("gameOver");
 
-    let isJumping = false;
-    let position = 20;
-    let obstacleX = 500;
-    let score = 0;
-    let speed = 4;
-    let running = true;
+let position = 20;
+let velocity = 0;
+let gravity = 0.6;
+let jumping = false;
 
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space" && !isJumping && running) jump();
-      if (e.code === "KeyR" && !running) resetGame();
-    });
+let obstacles = [];
+let frame = 0;
+let score = 0;
+let speed = 3;
+let running = true;
 
-    gameArea.addEventListener("touchstart", () => {
-      if (!isJumping && running) jump();
-      else if (!running) resetGame();
-    });
+// Controls
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && running) jump();
+  if (e.code === "KeyR" && !running) resetGame();
+});
 
-    function jump() {
-      isJumping = true;
-      let up = setInterval(() => {
-        if (position >= 90) {
-          clearInterval(up);
-          let down = setInterval(() => {
-            if (position <= 20) {
-              clearInterval(down);
-              isJumping = false;
-            }
-            position -= 5;
-            player.style.bottom = position + "px";
-          }, 20);
-        }
-        position += 5;
-        player.style.bottom = position + "px";
-      }, 20);
-    }
+gameArea.addEventListener("touchstart", () => {
+  if (running) jump();
+  else resetGame();
+});
 
-    function resetGame() {
-      obstacleX = 500;
-      score = 0;
-      speed = 4;
-      running = true;
-      scoreEl.textContent = score;
-      gameOverEl.style.display = "none";
-    }
+// Jump
+function jump() {
+  if (!jumping) {
+    velocity = 10;
+    jumping = true;
+  }
+}
 
-    function gameLoop() {
-      if (running) {
-        obstacleX -= speed;
-        obstacle.style.right = obstacleX + "px";
+// Create obstacle
+function createObstacle() {
+  const obs = document.createElement("div");
+  obs.className = "obstacle";
+  obs.style.width = 15 + Math.random() * 25 + "px";
+  obs.style.height = 20 + Math.random() * 50 + "px";
+  obs.style.left = gameArea.offsetWidth + "px";
+  gameArea.appendChild(obs);
+  obstacles.push(obs);
+}
 
-        if (obstacleX < -40) {
-  obstacleX = 500 + Math.random() * 300;
-
-  // obstacle size variation
-  const height = 20 + Math.random() * 40;
-  const width = 15 + Math.random() * 20;
-
-  obstacle.style.height = height + "px";
-  obstacle.style.width = width + "px";
-
-  score++;
+// Reset
+function resetGame() {
+  obstacles.forEach(o => o.remove());
+  obstacles = [];
+  position = 20;
+  velocity = 0;
+  score = 0;
+  speed = 3;
+  running = true;
+  jumping = false;
   scoreEl.textContent = score;
-
-  if (score % 5 === 0) speed += 0.4;
-  speed += 0.0008;
+  gameOverEl.style.display = "none";
 }
 
-const obstacleHeight = obstacle.offsetHeight;
+// Loop
+function loop() {
+  if (running) {
+    // Player physics
+    velocity -= gravity;
+    position += velocity;
+    if (position <= 20) {
+      position = 20;
+      velocity = 0;
+      jumping = false;
+    }
+    player.style.bottom = position + "px";
 
-if (
-  obstacleX < 80 &&
-  obstacleX > 30 &&
-  position < 20 + obstacleHeight
-) {
-  running = false;
-  gameOverEl.style.display = "block";
-}
-          running = false;
-          gameOverEl.style.display = "block";
-        }
+    // Obstacles
+    if (frame % 120 === 0) createObstacle();
+
+    obstacles.forEach((obs, i) => {
+      let x = obs.offsetLeft - speed;
+      obs.style.left = x + "px";
+
+      // Collision
+      const obsHeight = obs.offsetHeight;
+      if (x < 70 && x > 30 && position < 20 + obsHeight) {
+        running = false;
+        gameOverEl.style.display = "block";
       }
 
-      requestAnimationFrame(gameLoop);
-    }
+      // Remove
+      if (x < -50) {
+        obs.remove();
+        obstacles.splice(i, 1);
+        score++;
+        scoreEl.textContent = score;
+        speed += 0.1;
+      }
+    });
 
-    gameLoop();
-  </script>
+    frame++;
+  }
+
+  requestAnimationFrame(loop);
+}
+
+loop();
+</script>
 
 </body>
 </html>
