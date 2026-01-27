@@ -48,6 +48,7 @@
 
   .info { margin-top:20px; color:#94a3b8; font-size:14px; }
   .score { margin-top:10px; font-size:20px; }
+  .highscore { margin-top:6px; font-size:14px; color:#a5b4fc; }
   #gameOver { display:none; margin-top:15px; font-size:18px; }
 
   a { display:block; margin-top:35px; color:#38bdf8; text-decoration:none; }
@@ -65,6 +66,7 @@
 
 <div class="info">SPACE or TAP to jump</div>
 <div class="score">Score: <span id="score">0</span></div>
+<div class="highscore">High score: <span id="highScore">0</span></div>
 <div id="gameOver">Game Over — press R or TAP to restart</div>
 
 <a href="index.html">← Back to home</a>
@@ -73,11 +75,13 @@
 const gameArea = document.getElementById("gameArea");
 const player = document.getElementById("player");
 const scoreEl = document.getElementById("score");
+const highScoreEl = document.getElementById("highScore");
 const gameOverEl = document.getElementById("gameOver");
 
+// --- STATE ---
 let position = 20;
 let velocity = 0;
-let gravity = 0.8;     // CLAVE: evita flotación
+let gravity = 0.8;
 let jumping = false;
 
 let obstacles = [];
@@ -86,7 +90,15 @@ let score = 0;
 let speed = 3;
 let running = true;
 
-// CONTROLES
+// --- HIGH SCORE ---
+let highScore = localStorage.getItem("freecuHighScore");
+if (!highScore) {
+  highScore = 0;
+  localStorage.setItem("freecuHighScore", 0);
+}
+highScoreEl.textContent = highScore;
+
+// --- CONTROLS ---
 document.addEventListener("keydown", e => {
   if (e.code === "Space" && running) jump();
   if (e.code === "KeyR" && !running) resetGame();
@@ -97,7 +109,7 @@ gameArea.addEventListener("touchstart", () => {
   else resetGame();
 });
 
-// SALTO (impulso limpio)
+// --- JUMP ---
 function jump() {
   if (!jumping) {
     velocity = 10;
@@ -105,7 +117,7 @@ function jump() {
   }
 }
 
-// CREAR OBSTÁCULOS (JUSTOS)
+// --- OBSTACLES ---
 function createObstacle() {
   const obs = document.createElement("div");
   obs.className = "obstacle";
@@ -116,7 +128,7 @@ function createObstacle() {
   obstacles.push(obs);
 }
 
-// RESET
+// --- RESET ---
 function resetGame() {
   obstacles.forEach(o => o.remove());
   obstacles = [];
@@ -130,11 +142,11 @@ function resetGame() {
   gameOverEl.style.display = "none";
 }
 
-// LOOP PRINCIPAL
+// --- LOOP ---
 function loop() {
   if (running) {
 
-    // FÍSICA (FIX DEFINITIVO)
+    // Physics
     velocity -= gravity;
     position += velocity;
 
@@ -146,7 +158,7 @@ function loop() {
 
     player.style.bottom = position + "px";
 
-    // OBSTÁCULOS
+    // Obstacles
     if (frame % 120 === 0) createObstacle();
 
     obstacles.forEach((obs, i) => {
@@ -155,13 +167,20 @@ function loop() {
 
       const obsHeight = obs.offsetHeight;
 
-      // COLISIÓN JUSTA
+      // Collision
       if (x < 65 && x > 35 && position < 18 + obsHeight) {
         running = false;
         gameOverEl.style.display = "block";
+
+        // SAVE HIGH SCORE
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem("freecuHighScore", highScore);
+          highScoreEl.textContent = highScore;
+        }
       }
 
-      // ELIMINAR OBSTÁCULO
+      // Remove obstacle
       if (x < -50) {
         obs.remove();
         obstacles.splice(i, 1);
