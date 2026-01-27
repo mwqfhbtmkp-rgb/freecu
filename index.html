@@ -2,15 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>E6BAE807-3F61-44BA-AF9A-6B1072E62602.png</title>
+  <title>FREECU — Experimental Gaming Project</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    :root {
+      --bg-main: #020617;
+      --bg-soft: #020617;
+      --border-soft: #0f172a;
+      --text-main: #e5e7eb;
+      --text-soft: #94a3b8;
+      --accent: #22c55e;
+      --accent-blue: #38bdf8;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #020617;
-      color: #e5e7eb;
+      background: var(--bg-main);
+      color: var(--text-main);
       text-align: center;
     }
 
@@ -19,338 +29,219 @@
       text-decoration: none;
     }
 
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      width: 36px;
+    }
+
+    .logo span {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--accent);
+    }
+
+    nav a {
+      margin-left: 20px;
+      font-size: 14px;
+      color: var(--text-soft);
+    }
+
+    nav a.cta {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* HERO */
     .hero {
-      padding: 80px 20px 60px;
+      padding: 90px 20px 70px;
       background: radial-gradient(circle at top, #020617, #000000);
     }
 
     .hero h1 {
       font-size: 56px;
-      color: #22c55e;
+      color: var(--accent);
       margin-bottom: 20px;
       letter-spacing: 2px;
     }
 
-    .hero h2 {
-      font-size: 22px;
-      font-weight: 400;
-      margin-bottom: 20px;
-    }
-
     .hero p {
-      max-width: 600px;
-      margin: 0 auto 35px;
+      max-width: 620px;
+      margin: 0 auto 40px;
       font-size: 16px;
-      color: #94a3b8;
+      color: var(--text-soft);
       line-height: 1.6;
     }
 
-    .buttons a {
+    .hero .cta {
       display: inline-block;
-      margin: 10px;
       padding: 14px 36px;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 12px;
-    }
-
-    .play {
-      background: #22c55e;
-      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #020617;
       box-shadow: 0 0 20px rgba(34,197,94,0.35);
     }
 
-    .buy {
-      background: #020617;
-      color: #38bdf8;
-      border: 1px solid #38bdf8;
-    }
-
+    /* SECTIONS */
     .section {
-      padding: 60px 20px;
+      padding: 70px 20px;
     }
 
+    .section h2 {
+      font-size: 32px;
+      color: var(--accent);
+      margin-bottom: 25px;
+    }
+
+    .section p {
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text-main);
+    }
+
+    .muted {
+      color: var(--text-soft);
+      font-size: 15px;
+      margin-top: 20px;
+    }
+
+    /* ROADMAP */
+    .card {
+      max-width: 700px;
+      margin: 25px auto;
+      padding: 22px;
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      text-align: left;
+    }
+
+    .card h3 {
+      color: var(--accent-blue);
+      margin-bottom: 10px;
+    }
+
+    .card ul {
+      padding-left: 18px;
+      color: var(--text-main);
+    }
+
+    /* FOOTER */
     footer {
       font-size: 13px;
       color: #64748b;
       padding: 40px 20px;
+      border-top: 1px solid var(--border-soft);
     }
   </style>
 </head>
 
 <body>
-  
-  
-  <!-- HEADER WITH DROPDOWN MENU -->
-<div style="text-align:left; padding:20px 20px 10px;">
 
-  <!-- LOGO -->
-  <div style="display:flex; align-items:center; gap:12px;">
-
-  <div style="
-    width:60px;
-    height:60px;
-    background:#020617;
-    border:1px solid #0f172a;
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  ">
-    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png"
-         alt="FREECU logo"
-         style="width:40px; height:auto;">
+<header>
+  <div class="logo">
+    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png" alt="FREECU logo">
+    <span>FREECU</span>
   </div>
 
-  <span style="
-    font-size:28px;
-    font-weight:800;
-    color:#22c55e;
-    letter-spacing:2px;
-  ">
-    FREECU
-  </span>
-
-</div>
-
-  <!-- MENU BUTTON -->
-  <div style="position: relative; display: inline-block; margin-top: 10px;">
-    <button onclick="toggleMenu()" style="
-      background: none;
-      border: none;
-      color: #e5e7eb;
-      font-size: 26px;
-      cursor: pointer;
-    ">
-      ⋮
-    </button>
-
-    <!-- DROPDOWN -->
-    <div id="menuDropdown" style="
-      display: none;
-      position: absolute;
-      left: 0;
-      top: 40px;
-      background: #020617;
-      border: 1px solid #0f172a;
-      border-radius: 10px;
-      min-width: 160px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      z-index: 100;
-    ">
-
-      <a href="#"
-   style="
-     padding:12px 22px;
-     border-radius:10px;
-     background:var(--accent);
-     color:#020617;
-     font-weight:600;
-     text-decoration:none;
-   ">
-  Buy FREECU
-</a>
-
-      <a href="https://dexscreener.com/polygon"
-         target="_blank"
-         style="display:block; padding:12px; color:#38bdf8;">
-         Chart
-      </a>
-      <a href="#" style="display:block; padding:12px; color:#94a3b8;">
-         Docs (soon)
-      </a>
-
-    </div>
-  </div>
-</div>
-
-  <!-- LOGO -->
-  <div style="
-    font-size: 20px;
-    font-weight: bold;
-    color: #22c55e;
-    letter-spacing: 1px;
-  ">
-    FREECU
-  </div>
-
-  <!-- MENU LINKS -->
-  <div>
-    <a href="#" style="margin: 0 12px; color: #e5e7eb;">Home</a>
-    <a href="#game" style="margin: 0 12px; color: #e5e7eb;">Game</a>
+  <nav>
+    <a href="game.html">Game</a>
+    <a href="https://dexscreener.com/polygon" target="_blank">Chart</a>
     <a href="https://quickswap.exchange/#/swap?outputCurrency=0x9C8B1BED1fbA0869413fe95470457B5d5DdDF732"
        target="_blank"
-       style="margin: 0 12px; color: #22c55e; font-weight: bold;">
+       class="cta">
        Buy
     </a>
-    <a href="https://dexscreener.com/polygon"
-       target="_blank"
-       style="margin: 0 12px; color: #38bdf8;">
-       Chart
-    </a>
-    <a href="#" style="margin: 0 12px; color: #94a3b8;">
-       Docs
-    </a>
-  </div>
+  </nav>
+</header>
 
-</nav>
-
-  <!-- HERO -->
-  <div class="hero">
-    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png"
-     alt="FREECU logo"
-     style="width:90px; margin-bottom:20px;">
-    <h1>FREECU</h1>
-    <h2>A Polygon token connected to a simple clicker game</h2>
-    <p>
-      Play the game, explore the project, and decide if you want to participate.
-      FREECU is an early-stage experimental project focused on transparency
-      and community-driven growth.
-    </p>
-
-    <div class="buttons">
-      <a href="game.html"
-   style="
-     padding:12px 20px;
-     border:1px solid var(--border-soft);
-     border-radius:8px;
-     color:var(--text-main);
-     text-decoration:none;
-     font-weight:500;
-   ">
-  Play Game
-</a>
-
-    </div>
-  </div>
-  
-  <!-- WHAT IS FREECU -->
-<div class="section" style="background:#020617;">
-
-  <h2 style="
-    font-size:32px;
-    color:#22c55e;
-    margin-bottom:20px;
-  ">
-    What is FREECU?
-  </h2>
-
-  <p style="
-    max-width:700px;
-    margin:0 auto;
-    font-size:16px;
-    line-height:1.7;
-    color:#cbd5e1;
-  ">
-    FREECU is an experimental crypto project built on the Polygon network.
-    It combines a simple clicker game with a community-driven token to explore
-    how games, transparency, and on-chain experiments can evolve together.
+<section class="hero">
+  <h1>FREECU</h1>
+  <p>
+    An experimental gaming-related crypto project.<br>
+    Built in public. No promises.
   </p>
+  <a href="game.html" class="cta">Play the prototype</a>
+</section>
 
-  <p style="
-    max-width:700px;
-    margin:20px auto 0;
-    font-size:15px;
-    line-height:1.6;
-    color:#94a3b8;
-  ">
-    This project is early-stage and constantly evolving.
-    There are no financial promises — the goal is to build, test,
-    learn in public, and improve step by step with community feedback.
+<section class="section">
+  <h2>What is FREECU?</h2>
+  <p>
+    FREECU is an early-stage experiment exploring the intersection between
+    simple web games and crypto culture.
   </p>
+  <p class="muted">
+    The project focuses on transparency, learning in public,
+    and iterating step by step based on real feedback.
+    There are no financial promises.
+  </p>
+</section>
 
-</div>
+<section class="section">
+  <h2>Prototype Game</h2>
+  <p>
+    A simple runner-style game built as an early prototype.
+    The goal is to test ideas, not to offer rewards.
+  </p>
+  <p class="muted">
+    You can play it directly in your browser.
+  </p>
+</section>
 
-  <!-- GAME PLACEHOLDER -->
-  <div id="game" class="section">
-    <h2>🎮 FREECU Clicker</h2>
-    <p>
-      game.htlm<br>
-      Play, test, and participate in the project.
-    </p>
-  </div>
+<section class="section">
+  <h2>Roadmap</h2>
 
-  <!-- ROADMAP SECTION -->
-<div class="section" style="background:#020617;">
-
-  <h2 style="
-    font-size:32px;
-    color:#22c55e;
-    margin-bottom:30px;
-  ">
-    🗺️ Roadmap
-  </h2>
-
-  <!-- PHASE 1 -->
-  <div style="
-    max-width:700px;
-    margin:0 auto 25px;
-    padding:20px;
-    background:#020617;
-    border:1px solid #0f172a;
-    border-radius:14px;
-  ">
-    <h3 style="color:#38bdf8; margin-bottom:10px;">
-      Phase 1 — Foundation
-    </h3>
-    <ul style="text-align:left; color:#cbd5e1;">
+  <div class="card">
+    <h3>Phase 1 — Foundation</h3>
+    <ul>
       <li>Token deployed on Polygon</li>
-      <li>Liquidity added (QuickSwap V2)</li>
+      <li>Liquidity added</li>
       <li>Website live</li>
-      <li>Clicker game prototype</li>
+      <li>Prototype game released</li>
     </ul>
   </div>
 
-  <!-- PHASE 2 -->
-  <div style="
-    max-width:700px;
-    margin:0 auto 25px;
-    padding:20px;
-    background:#020617;
-    border:1px solid #0f172a;
-    border-radius:14px;
-  ">
-    <h3 style="color:#38bdf8; margin-bottom:10px;">
-      Phase 2 — Iteration
-    </h3>
-    <ul style="text-align:left; color:#cbd5e1;">
-      <li>Improve website UX</li>
+  <div class="card">
+    <h3>Phase 2 — Iteration</h3>
+    <ul>
+      <li>Gameplay improvements</li>
+      <li>Website refinement</li>
       <li>Community feedback</li>
-      <li>Game improvements</li>
-      <li>Explore FREECU utility</li>
     </ul>
   </div>
 
-  <!-- PHASE 3 -->
-  <div style="
-    max-width:700px;
-    margin:0 auto;
-    padding:20px;
-    background:#020617;
-    border:1px solid #0f172a;
-    border-radius:14px;
-  ">
-    <h3 style="color:#38bdf8; margin-bottom:10px;">
-      Phase 3 — Utility
-    </h3>
-    <ul style="text-align:left; color:#cbd5e1;">
-      <li>FREECU in-game use</li>
-      <li>Boosts and access features</li>
-      <li>Simple wallet interactions</li>
-      <li>Documentation page</li>
+  <div class="card">
+    <h3>Phase 3 — Exploration</h3>
+    <ul>
+      <li>Experiment with utility concepts</li>
+      <li>Optional in-game interactions</li>
+      <li>Documentation</li>
     </ul>
   </div>
+</section>
 
-</div>
-
-  <!-- FOOTER -->
-  <footer>
-    FREECU is an experimental crypto project.<br>
-    No financial promises. Always do your own research.
-    © 2026 FREECU. All rights reserved.
-The FREECU name and logo are original works created for this project.
-
-  </footer>
+<footer>
+  FREECU is an experimental project. Nothing here is financial advice.<br>
+  © 2026 FREECU. All rights reserved.<br>
+  The FREECU name and logo are original works created for this project.
+</footer>
 
 </body>
 </html>
