@@ -24,12 +24,9 @@
     text-align: center;
   }
 
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
+  a { color: inherit; text-decoration: none; }
 
-  /* HEADER */
+  /* ================= HEADER ================= */
   header {
     display: flex;
     align-items: center;
@@ -41,17 +38,15 @@
   .header-brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px; /* MUY IMPORTANTE: compacto */
   }
 
   .header-brand img.icon {
-    width: 32px;
-    height: auto;
+    width: 36px;
   }
 
   .header-brand img.text {
-    width: 110px;
-    height: auto;
+    width: 120px;
   }
 
   nav a {
@@ -65,31 +60,31 @@
     font-weight: bold;
   }
 
-  /* HERO */
+  /* ================= HERO ================= */
   .hero {
-    padding: 100px 20px 80px;
+    padding: 110px 20px 90px;
     background: radial-gradient(circle at top, var(--bg-main), var(--bg-dark));
   }
 
   .brand-center {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 18px;
-    margin-bottom: 32px;
+    justify-content: center;
+    gap: 12px;            /* CLAVE: unión visual */
+    margin-bottom: 34px;
   }
 
   .brand-center img.icon {
-    width: 96px;
+    width: 140px;         /* ICONO FUERTE */
   }
 
   .brand-center img.text {
-    width: 240px;
+    width: 360px;         /* WORDMARK PROTAGONISTA */
   }
 
   .hero p {
     max-width: 620px;
-    margin: 0 auto 40px;
+    margin: 0 auto 42px;
     font-size: 16px;
     color: var(--text-soft);
     line-height: 1.6;
@@ -97,7 +92,7 @@
 
   .hero .cta {
     display: inline-block;
-    padding: 14px 36px;
+    padding: 14px 38px;
     font-size: 16px;
     font-weight: 600;
     border-radius: 10px;
@@ -106,7 +101,7 @@
     box-shadow: 0 0 20px rgba(34,197,94,0.35);
   }
 
-  /* SECTIONS */
+  /* ================= SECTIONS ================= */
   .section {
     padding: 70px 20px;
   }
@@ -131,7 +126,7 @@
     margin-top: 20px;
   }
 
-  /* ROADMAP */
+  /* ================= ROADMAP ================= */
   .card {
     max-width: 700px;
     margin: 25px auto;
@@ -148,10 +143,9 @@
 
   .card ul {
     padding-left: 18px;
-    color: var(--text-main);
   }
 
-  /* FOOTER */
+  /* ================= FOOTER ================= */
   footer {
     font-size: 13px;
     color: #64748b;
@@ -159,10 +153,24 @@
     border-top: 1px solid var(--border-soft);
   }
 
-  /* MOBILE */
-  @media (max-width: 480px) {
-    .brand-center img.icon { width: 80px; }
-    .brand-center img.text { width: 200px; }
+  /* ================= MOBILE ================= */
+  @media (max-width: 640px) {
+    .brand-center {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .brand-center img.icon {
+      width: 100px;
+    }
+
+    .brand-center img.text {
+      width: 260px;
+    }
+
+    .header-brand img.icon {
+      width: 28px;
+    }
 
     .header-brand img.text {
       width: 90px;
@@ -175,8 +183,8 @@
 
 <header>
   <div class="header-brand">
-    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png" alt="FREECU logo" class="icon">
-    <img src="2CD41450-C2C6-4AF2-9100-A1C7E467E881.png" alt="FREECU" class="text">
+    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png" class="icon" alt="FREECU logo">
+    <img src="2CD41450-C2C6-4AF2-9100-A1C7E467E881.png" class="text" alt="FREECU">
   </div>
 
   <nav>
@@ -184,16 +192,14 @@
     <a href="https://dexscreener.com/polygon" target="_blank">Chart</a>
     <a href="https://quickswap.exchange/#/swap?outputCurrency=0x9C8B1BED1fbA0869413fe95470457B5d5DdDF732"
        target="_blank"
-       class="cta">
-       Buy
-    </a>
+       class="cta">Buy</a>
   </nav>
 </header>
 
 <section class="hero">
   <div class="brand-center">
-    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png" alt="FREECU logo" class="icon">
-    <img src="2CD41450-C2C6-4AF2-9100-A1C7E467E881.png" alt="FREECU" class="text">
+    <img src="E6BAE807-3F61-44BA-AF9A-6B1072E62602.png" class="icon" alt="FREECU logo">
+    <img src="2CD41450-C2C6-4AF2-9100-A1C7E467E881.png" class="text" alt="FREECU">
   </div>
 
   <p>
@@ -213,7 +219,6 @@
   <p class="muted">
     The project focuses on transparency, learning in public,
     and iterating step by step based on real feedback.
-    There are no financial promises.
   </p>
 </section>
 
