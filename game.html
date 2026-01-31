@@ -11,25 +11,49 @@
     background: #020617;
     color: #e5e7eb;
     font-family: Arial, sans-serif;
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .left {
     text-align: center;
   }
 
-  h1 {
-    margin: 16px 0 8px;
-    font-size: 24px;
+  .right {
+    display: flex;
+    justify-content: center;
   }
 
+  h1 {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* GAME */
   #game {
     width: 100%;
     max-width: 420px;
     height: 600px;
-    margin: 0 auto;
     background: #020617;
     border: 1px solid #0f172a;
     border-radius: 12px;
     position: relative;
     overflow: hidden;
-    touch-action: none; /* 🔴 CLAVE PARA MÓVIL */
+    touch-action: none;
   }
 
   #player {
@@ -46,7 +70,6 @@
     width: 40px;
     background: #e5e7eb;
     position: absolute;
-    right: -40px;
   }
 
   #overlay {
@@ -56,31 +79,59 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    font-size: 18px;
-    pointer-events: none; /* 🔴 NO BLOQUEA INPUT */
+    font-size: 16px;
+    pointer-events: none;
+    text-align: center;
+    padding: 20px;
   }
 
-  #info {
-    font-size: 14px;
-    color: #94a3b8;
-    margin: 10px 0 20px;
+  /* PC LAYOUT */
+  @media (min-width: 900px) {
+    .container {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .left {
+      flex: 1;
+      text-align: left;
+      padding-right: 40px;
+    }
+
+    .right {
+      flex: 0 0 420px;
+    }
   }
 </style>
 </head>
 
 <body>
 
-<h1>FREECU — One Mechanic</h1>
+<div class="container">
 
-<div id="game">
-  <div id="player"></div>
-  <div id="overlay">Hold to start</div>
-</div>
+  <div class="left">
+    <h1>FREECU — One Mechanic</h1>
+    <p>
+      This game has only one control.<br>
+      Hold to go up. Release to fall.<br><br>
+      Touching the floor or the ceiling ends the run.
+    </p>
+    <p>
+      The rules of this game are unstable.<br>
+      FREECU holders decide what changes next.
+    </p>
+    <p style="font-size:12px;">
+      Mouse or touch · Hold to play
+    </p>
+  </div>
 
-<div id="info">
-  Hold = go up · Release = fall<br>
-  Touch or click inside the game
+  <div class="right">
+    <div id="game">
+      <div id="player"></div>
+      <div id="overlay">Hold click or touch to start</div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -117,7 +168,7 @@
     obstacles = [];
 
     player.style.top = y + "px";
-    overlay.textContent = "Hold to start";
+    overlay.textContent = "Hold click or touch to start";
     overlay.style.display = "flex";
   }
 
@@ -195,7 +246,6 @@
     requestAnimationFrame(loop);
   }
 
-  /* INPUT — SOLO SOBRE EL JUEGO */
   game.addEventListener("pointerdown", () => {
     holding = true;
     if (!started) start();
