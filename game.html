@@ -3,14 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <title>FREECU – One Mechanic</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
+  * {
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
   body {
     margin: 0;
     background: #020617;
     color: #e5e7eb;
     font-family: Arial, sans-serif;
+    overscroll-behavior: none;
   }
 
   .container {
@@ -51,7 +61,9 @@
     border-radius: 12px;
     position: relative;
     overflow: hidden;
-    touch-action: none;
+
+    touch-action: none;     /* 🔴 CLAVE */
+    outline: none;
   }
 
   #player {
@@ -113,17 +125,17 @@
       Hold to go up. Release to fall.
     </p>
     <p>
-      Touching the floor or the ceiling ends the run.
+      Touching floor or ceiling ends the run.
     </p>
     <p style="font-size:12px;">
-      Mouse or touch · Hold to play
+      Mouse or touch · Hold inside the game
     </p>
   </div>
 
   <div class="right">
-    <div id="game">
+    <div id="game" tabindex="-1">
       <div id="player"></div>
-      <div id="overlay">Hold click or touch to start</div>
+      <div id="overlay">Hold to start</div>
     </div>
   </div>
 
@@ -146,10 +158,11 @@
   let timer = 0;
   let safeTime = 0;
 
-  // Difficulty parameters (JUST BUT CRUEL)
-  const gravity = 0.55;
-  const lift = -1.0;
-  let speed = 2.5;
+  /* 🔥 HARDER BUT FAIR */
+  const gravity = 0.75;
+  const lift = -1.05;
+  let speed = 3.0;
+  let gap = 150;
 
   function reset() {
     y = H / 2 - P / 2;
@@ -158,7 +171,8 @@
     started = false;
     timer = 0;
     safeTime = 0;
-    speed = 2.5;
+    speed = 3.0;
+    gap = 150;
 
     obstacles.forEach(o => {
       o.top.remove();
@@ -167,7 +181,7 @@
     obstacles = [];
 
     player.style.top = y + "px";
-    overlay.textContent = "Hold click or touch to start";
+    overlay.textContent = "Hold to start";
     overlay.style.display = "flex";
   }
 
@@ -185,8 +199,7 @@
   }
 
   function spawnObstacle() {
-    const gap = 160;
-    const topH = Math.random() * 160 + 60;
+    const topH = Math.random() * 140 + 70;
     const bottomH = H - topH - gap;
 
     const top = document.createElement("div");
@@ -222,7 +235,7 @@
     player.style.top = y + "px";
 
     timer++;
-    if (timer > 120 && safeTime > 120) {
+    if (timer > 100 && safeTime > 80) {
       spawnObstacle();
       timer = 0;
     }
@@ -244,19 +257,22 @@
 
     obstacles = obstacles.filter(o => o.x > -50);
 
-    speed += 0.0004; // progressive difficulty
+    speed += 0.0008;  // faster ramp
+    gap -= 0.003;     // slowly tighter
 
     requestAnimationFrame(loop);
   }
 
-  // INPUT (PC + MOBILE)
-  game.addEventListener("pointerdown", () => {
+  /* INPUT — SINGLE SOURCE */
+  game.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
     holding = true;
     if (!started) start();
     if (!alive) reset();
   });
 
   game.addEventListener("pointerup", () => holding = false);
+  game.addEventListener("pointercancel", () => holding = false);
   game.addEventListener("pointerleave", () => holding = false);
 
   reset();
