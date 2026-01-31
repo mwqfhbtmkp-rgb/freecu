@@ -2,224 +2,209 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FREECU Runner</title>
+<title>FREECU – One Mechanic</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
   body {
     margin: 0;
-    font-family: Arial, sans-serif;
     background: #020617;
     color: #e5e7eb;
+    font-family: Arial, sans-serif;
     text-align: center;
-    padding: 40px 20px;
   }
 
-  h1 { font-size: 42px; margin-bottom: 6px; }
-  .subtitle { color:#94a3b8; font-size:14px; margin-bottom:30px; }
+  h1 {
+    margin-top: 20px;
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
 
-  #gameArea {
-    width:100%;
-    max-width:520px;
-    height:220px;
-    border:1px solid #0f172a;
-    border-radius:12px;
-    margin:0 auto;
-    position:relative;
-    overflow:hidden;
-    background: repeating-linear-gradient(
-      to right,
-      #020617,
-      #020617 30px,
-      #020617 60px
-    );
+  #game {
+    width: 100%;
+    max-width: 420px;
+    height: 600px;
+    margin: 20px auto;
+    background: #020617;
+    border: 1px solid #0f172a;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
   }
 
   #player {
-    width:30px;
-    height:30px;
-    background:#22c55e;
-    position:absolute;
-    bottom:20px;
-    left:40px;
-    border-radius:6px;
-    transition: bottom 0.05s linear, transform 0.08s ease;
+    width: 26px;
+    height: 26px;
+    background: #22c55e;
+    border-radius: 6px;
+    position: absolute;
+    left: 80px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   .obstacle {
-    position:absolute;
-    bottom:20px;
-    background:#e5e7eb;
-    border-radius:4px;
+    width: 40px;
+    background: #e5e7eb;
+    position: absolute;
+    right: -40px;
   }
 
-  .info { margin-top:20px; color:#94a3b8; font-size:14px; }
-  .score { margin-top:10px; font-size:20px; }
-  .highscore { margin-top:6px; font-size:14px; color:#a5b4fc; }
+  #info {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-top: 10px;
+  }
 
   #gameOver {
-    display:none;
-    margin-top:15px;
-    font-size:18px;
-    animation: pop 0.3s ease-out;
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(2,6,23,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 18px;
   }
 
-  @keyframes pop {
-    0% { transform: scale(0.9); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+  button {
+    padding: 10px 20px;
+    background: #22c55e;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
   }
-
-  a { display:block; margin-top:35px; color:#38bdf8; text-decoration:none; }
 </style>
 </head>
 
 <body>
 
-<h1>FREECU Runner</h1>
-<div class="subtitle">Early prototype — no rewards, no tokens, no promises.</div>
+<h1>FREECU — One Mechanic</h1>
 
-<div id="gameArea">
+<div id="game">
   <div id="player"></div>
+  <div id="gameOver">
+    <div>Game Over</div>
+    <button onclick="restart()">Restart</button>
+  </div>
 </div>
 
-<div class="info">SPACE or TAP to jump</div>
-<div class="score">Score: <span id="score">0</span></div>
-<div class="highscore">High score: <span id="highScore">0</span></div>
-<div id="gameOver">Game Over — press R or TAP to restart</div>
-
-<a href="index.html">← Back to home</a>
+<div id="info">
+  Hold = go up · Release = fall<br>
+  Don’t touch floor or ceiling
+</div>
 
 <script>
-const gameArea = document.getElementById("gameArea");
-const player = document.getElementById("player");
-const scoreEl = document.getElementById("score");
-const highScoreEl = document.getElementById("highScore");
-const gameOverEl = document.getElementById("gameOver");
+  const game = document.getElementById("game");
+  const player = document.getElementById("player");
+  const gameOverScreen = document.getElementById("gameOver");
 
-// --- STATE ---
-let position = 20;
-let velocity = 0;
-let gravity = 0.8;
-let jumping = false;
+  const GAME_HEIGHT = 600;
+  const PLAYER_SIZE = 26;
 
-let obstacles = [];
-let frame = 0;
-let score = 0;
-let speed = 3;
-let running = true;
+  let y = GAME_HEIGHT / 2;
+  let velocity = 0;
+  let gravity = 0.6;
+  let lift = -1.2;
+  let holding = false;
+  let alive = true;
 
-// --- HIGH SCORE ---
-let highScore = localStorage.getItem("freecuHighScore");
-if (!highScore) {
-  highScore = 0;
-  localStorage.setItem("freecuHighScore", 0);
-}
-highScoreEl.textContent = highScore;
+  let obstacles = [];
+  let obstacleTimer = 0;
 
-// --- CONTROLS ---
-document.addEventListener("keydown", e => {
-  if (e.code === "Space" && running) jump();
-  if (e.code === "KeyR" && !running) resetGame();
-});
+  function createObstacle() {
+    const gap = 160;
+    const topHeight = Math.random() * 200 + 40;
+    const bottomHeight = GAME_HEIGHT - topHeight - gap;
 
-gameArea.addEventListener("touchstart", () => {
-  if (running) jump();
-  else resetGame();
-});
+    const top = document.createElement("div");
+    top.className = "obstacle";
+    top.style.height = topHeight + "px";
+    top.style.top = "0px";
 
-// --- JUMP ---
-function jump() {
-  if (!jumping) {
-    velocity = 10;
-    jumping = true;
+    const bottom = document.createElement("div");
+    bottom.className = "obstacle";
+    bottom.style.height = bottomHeight + "px";
+    bottom.style.bottom = "0px";
+
+    game.appendChild(top);
+    game.appendChild(bottom);
+
+    obstacles.push({ top, bottom, x: game.offsetWidth });
   }
-}
 
-// --- OBSTACLES ---
-function createObstacle() {
-  const obs = document.createElement("div");
-  obs.className = "obstacle";
-  obs.style.width = 18 + Math.random() * 22 + "px";
-  obs.style.height = 20 + Math.random() * 30 + "px";
-  obs.style.left = gameArea.offsetWidth + "px";
-  gameArea.appendChild(obs);
-  obstacles.push(obs);
-}
+  function update() {
+    if (!alive) return;
 
-// --- RESET ---
-function resetGame() {
-  obstacles.forEach(o => o.remove());
-  obstacles = [];
-  position = 20;
-  velocity = 0;
-  score = 0;
-  speed = 3;
-  running = true;
-  jumping = false;
-  scoreEl.textContent = score;
-  gameOverEl.style.display = "none";
-}
+    velocity += gravity;
+    if (holding) velocity += lift;
 
-// --- LOOP ---
-function loop() {
-  if (running) {
+    y += velocity;
 
-    // Physics
-    velocity -= gravity;
-    position += velocity;
-
-    if (position <= 20) {
-      position = 20;
-      velocity = 0;
-      jumping = false;
-
-      // landing squash
-      player.style.transform = "scaleY(0.9)";
-      setTimeout(() => {
-        player.style.transform = "scaleY(1)";
-      }, 80);
+    // death by ceiling or floor
+    if (y <= 0 || y + PLAYER_SIZE >= GAME_HEIGHT) {
+      die();
     }
 
-    player.style.bottom = position + "px";
+    player.style.top = y + "px";
 
-    // Obstacles
-    if (frame % 120 === 0) createObstacle();
+    obstacleTimer++;
+    if (obstacleTimer > 120) {
+      createObstacle();
+      obstacleTimer = 0;
+    }
 
-    obstacles.forEach((obs, i) => {
-      let x = obs.offsetLeft - speed;
-      obs.style.left = x + "px";
+    obstacles.forEach(o => {
+      o.x -= 3;
+      o.top.style.left = o.x + "px";
+      o.bottom.style.left = o.x + "px";
 
-      const obsHeight = obs.offsetHeight;
-
-      // Collision
-      if (x < 65 && x > 35 && position < 18 + obsHeight) {
-        running = false;
-        gameOverEl.style.display = "block";
-
-        if (score > highScore) {
-          highScore = score;
-          localStorage.setItem("freecuHighScore", highScore);
-          highScoreEl.textContent = highScore;
+      if (o.x < 80 + PLAYER_SIZE && o.x + 40 > 80) {
+        if (
+          y < o.top.offsetHeight ||
+          y + PLAYER_SIZE > GAME_HEIGHT - o.bottom.offsetHeight
+        ) {
+          die();
         }
-      }
-
-      // Remove obstacle
-      if (x < -50) {
-        obs.remove();
-        obstacles.splice(i, 1);
-        score++;
-        scoreEl.textContent = score;
-        speed += 0.1;
       }
     });
 
-    frame++;
+    obstacles = obstacles.filter(o => o.x > -50);
+
+    requestAnimationFrame(update);
   }
 
-  requestAnimationFrame(loop);
-}
+  function die() {
+    alive = false;
+    gameOverScreen.style.display = "flex";
+  }
 
-loop();
+  function restart() {
+    y = GAME_HEIGHT / 2;
+    velocity = 0;
+    alive = true;
+    obstacles.forEach(o => {
+      o.top.remove();
+      o.bottom.remove();
+    });
+    obstacles = [];
+    gameOverScreen.style.display = "none";
+    update();
+  }
+
+  // controls
+  document.addEventListener("mousedown", () => holding = true);
+  document.addEventListener("mouseup", () => holding = false);
+  document.addEventListener("touchstart", e => {
+    e.preventDefault();
+    holding = true;
+  }, { passive: false });
+  document.addEventListener("touchend", () => holding = false);
+
+  update();
 </script>
 
 </body>
