@@ -2,280 +2,115 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FREECU – One Mechanic</title>
-
-<meta name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FREECU — Tower Defense (Prototype)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  * {
-    box-sizing: border-box;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-  }
-
   body {
     margin: 0;
     background: #020617;
     color: #e5e7eb;
     font-family: Arial, sans-serif;
-    overscroll-behavior: none;
-  }
-
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .left {
-    text-align: center;
-  }
-
-  .right {
     display: flex;
     justify-content: center;
-  }
-
-  h1 {
-    font-size: 26px;
-    margin-bottom: 10px;
-  }
-
-  p {
-    font-size: 14px;
-    color: #94a3b8;
-    line-height: 1.6;
+    align-items: center;
+    height: 100vh;
   }
 
   #game {
-    width: 100%;
-    max-width: 420px;
-    height: 600px;
+    width: 900px;
+    height: 240px;
     background: #020617;
     border: 1px solid #0f172a;
-    border-radius: 12px;
     position: relative;
-    overflow: hidden;
-
-    touch-action: none;     /* 🔴 CLAVE */
-    outline: none;
+    display: flex;
+    align-items: center;
+    padding-left: 120px;
   }
 
-  #player {
-    width: 26px;
-    height: 26px;
-    background: #22c55e;
-    border-radius: 6px;
+  /* ENEMY ENTRY (VISUAL ONLY FOR NOW) */
+  #entry {
     position: absolute;
-    left: 80px;
-    top: 50%;
-  }
-
-  .obstacle {
-    width: 40px;
-    background: #e5e7eb;
-    position: absolute;
-  }
-
-  #overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(2,6,23,0.9);
+    left: 20px;
+    width: 60px;
+    height: 40px;
+    border: 1px dashed #334155;
+    color: #334155;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 20px;
-    font-size: 16px;
-    pointer-events: none;
   }
 
-  @media (min-width: 900px) {
-    .container {
-      flex-direction: row;
-      align-items: center;
-    }
+  /* SLOTS */
+  .slot {
+    width: 80px;
+    height: 80px;
+    border: 1px dashed #334155;
+    margin-right: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
 
-    .left {
-      flex: 1;
-      text-align: left;
-      padding-right: 40px;
-    }
+  .slot:hover {
+    border-color: #22c55e;
+  }
 
-    .right {
-      flex: 0 0 420px;
-    }
+  /* TOWER */
+  .tower {
+    width: 40px;
+    height: 60px;
+    background: #22c55e;
+    border-radius: 6px;
+  }
+
+  /* INFO */
+  #info {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    width: 100%;
+    font-size: 14px;
+    color: #94a3b8;
+    text-align: center;
   }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div id="game">
 
-  <div class="left">
-    <h1>FREECU — One Mechanic</h1>
-    <p>
-      One control only.<br>
-      Hold to go up. Release to fall.
-    </p>
-    <p>
-      Touching floor or ceiling ends the run.
-    </p>
-    <p style="font-size:12px;">
-      Mouse or touch · Hold inside the game
-    </p>
-  </div>
+  <div id="entry">ENEMY →</div>
 
-  <div class="right">
-    <div id="game" tabindex="-1">
-      <div id="player"></div>
-      <div id="overlay">Hold to start</div>
-    </div>
-  </div>
+  <div class="slot"></div>
+  <div class="slot"></div>
+  <div class="slot"></div>
+  <div class="slot"></div>
+  <div class="slot"></div>
+
+  <div id="info">Click on a slot to deploy a tower</div>
 
 </div>
 
 <script>
-  const game = document.getElementById("game");
-  const player = document.getElementById("player");
-  const overlay = document.getElementById("overlay");
+  const slots = document.querySelectorAll(".slot");
 
-  const H = 600;
-  const P = 26;
+  slots.forEach(slot => {
+    slot.addEventListener("click", () => {
 
-  let y, v;
-  let holding = false;
-  let alive = false;
-  let started = false;
+      // If slot already has a tower, do nothing
+      if (slot.querySelector(".tower")) return;
 
-  let obstacles = [];
-  let timer = 0;
-  let safeTime = 0;
+      // Create tower
+      const tower = document.createElement("div");
+      tower.className = "tower";
 
-  /* 🔥 HARDER BUT FAIR */
-  const gravity = 0.75;
-  const lift = -1.05;
-  let speed = 3.0;
-  let gap = 150;
-
-  function reset() {
-    y = H / 2 - P / 2;
-    v = 0;
-    alive = true;
-    started = false;
-    timer = 0;
-    safeTime = 0;
-    speed = 3.0;
-    gap = 150;
-
-    obstacles.forEach(o => {
-      o.top.remove();
-      o.bottom.remove();
+      slot.appendChild(tower);
     });
-    obstacles = [];
-
-    player.style.top = y + "px";
-    overlay.textContent = "Hold to start";
-    overlay.style.display = "flex";
-  }
-
-  function start() {
-    if (started) return;
-    started = true;
-    overlay.style.display = "none";
-    requestAnimationFrame(loop);
-  }
-
-  function die() {
-    alive = false;
-    overlay.textContent = "Game Over — hold to restart";
-    overlay.style.display = "flex";
-  }
-
-  function spawnObstacle() {
-    const topH = Math.random() * 140 + 70;
-    const bottomH = H - topH - gap;
-
-    const top = document.createElement("div");
-    top.className = "obstacle";
-    top.style.height = topH + "px";
-    top.style.top = "0";
-
-    const bottom = document.createElement("div");
-    bottom.className = "obstacle";
-    bottom.style.height = bottomH + "px";
-    bottom.style.bottom = "0";
-
-    game.appendChild(top);
-    game.appendChild(bottom);
-
-    obstacles.push({ top, bottom, x: game.clientWidth });
-  }
-
-  function loop() {
-    if (!alive) return;
-
-    safeTime++;
-
-    v += gravity;
-    if (holding) v += lift;
-    y += v;
-
-    if (y <= 0 || y + P >= H) {
-      die();
-      return;
-    }
-
-    player.style.top = y + "px";
-
-    timer++;
-    if (timer > 100 && safeTime > 80) {
-      spawnObstacle();
-      timer = 0;
-    }
-
-    obstacles.forEach(o => {
-      o.x -= speed;
-      o.top.style.left = o.x + "px";
-      o.bottom.style.left = o.x + "px";
-
-      if (o.x < 80 + P && o.x + 40 > 80) {
-        if (
-          y < o.top.offsetHeight ||
-          y + P > H - o.bottom.offsetHeight
-        ) {
-          die();
-        }
-      }
-    });
-
-    obstacles = obstacles.filter(o => o.x > -50);
-
-    speed += 0.0008;  // faster ramp
-    gap -= 0.003;     // slowly tighter
-
-    requestAnimationFrame(loop);
-  }
-
-  /* INPUT — SINGLE SOURCE */
-  game.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    holding = true;
-    if (!started) start();
-    if (!alive) reset();
   });
-
-  game.addEventListener("pointerup", () => holding = false);
-  game.addEventListener("pointercancel", () => holding = false);
-  game.addEventListener("pointerleave", () => holding = false);
-
-  reset();
 </script>
 
 </body>
