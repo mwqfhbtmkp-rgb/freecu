@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,20 +15,21 @@
   }
 
   h1 {
-    margin-top: 20px;
-    font-size: 26px;
+    margin: 16px 0 8px;
+    font-size: 24px;
   }
 
   #game {
     width: 100%;
     max-width: 420px;
     height: 600px;
-    margin: 20px auto;
+    margin: 0 auto;
     background: #020617;
     border: 1px solid #0f172a;
     border-radius: 12px;
     position: relative;
     overflow: hidden;
+    touch-action: none; /* 🔴 CLAVE PARA MÓVIL */
   }
 
   #player {
@@ -40,7 +40,6 @@
     position: absolute;
     left: 80px;
     top: 50%;
-    transform: translateY(-50%);
   }
 
   .obstacle {
@@ -58,23 +57,14 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 12px;
     font-size: 18px;
-  }
-
-  button {
-    padding: 10px 20px;
-    background: #22c55e;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
+    pointer-events: none; /* 🔴 NO BLOQUEA INPUT */
   }
 
   #info {
     font-size: 14px;
     color: #94a3b8;
-    margin-top: 10px;
+    margin: 10px 0 20px;
   }
 </style>
 </head>
@@ -85,42 +75,40 @@
 
 <div id="game">
   <div id="player"></div>
-
-  <div id="overlay">
-    <div id="overlayText">Hold to start</div>
-    <button onclick="startGame()">Start</button>
-  </div>
+  <div id="overlay">Hold to start</div>
 </div>
 
 <div id="info">
   Hold = go up · Release = fall<br>
-  Don’t touch floor or ceiling
+  Touch or click inside the game
 </div>
 
 <script>
   const game = document.getElementById("game");
   const player = document.getElementById("player");
   const overlay = document.getElementById("overlay");
-  const overlayText = document.getElementById("overlayText");
 
-  const GAME_HEIGHT = 600;
-  const PLAYER_SIZE = 26;
+  const H = 600;
+  const P = 26;
 
-  let y, velocity, holding, alive, started;
+  let y, v;
+  let holding = false;
+  let alive = false;
+  let started = false;
+
   let obstacles = [];
-  let obstacleTimer = 0;
+  let timer = 0;
 
   const gravity = 0.6;
-  const lift = -1.1;
+  const lift = -1.2;
   const speed = 3;
 
-  function resetState() {
-    y = GAME_HEIGHT / 2 - PLAYER_SIZE / 2;
-    velocity = 0;
-    holding = false;
+  function reset() {
+    y = H / 2 - P / 2;
+    v = 0;
     alive = true;
     started = false;
-    obstacleTimer = 0;
+    timer = 0;
 
     obstacles.forEach(o => {
       o.top.remove();
@@ -129,60 +117,62 @@
     obstacles = [];
 
     player.style.top = y + "px";
+    overlay.textContent = "Hold to start";
+    overlay.style.display = "flex";
   }
 
-  function startGame() {
-    overlay.style.display = "none";
+  function start() {
+    if (started) return;
     started = true;
-    requestAnimationFrame(update);
-  }
-
-  function createObstacle() {
-    const gap = 160;
-    const topHeight = Math.random() * 200 + 40;
-    const bottomHeight = GAME_HEIGHT - topHeight - gap;
-
-    const top = document.createElement("div");
-    top.className = "obstacle";
-    top.style.height = topHeight + "px";
-    top.style.top = "0px";
-
-    const bottom = document.createElement("div");
-    bottom.className = "obstacle";
-    bottom.style.height = bottomHeight + "px";
-    bottom.style.bottom = "0px";
-
-    game.appendChild(top);
-    game.appendChild(bottom);
-
-    obstacles.push({ top, bottom, x: game.offsetWidth });
+    overlay.style.display = "none";
+    requestAnimationFrame(loop);
   }
 
   function die() {
     alive = false;
-    overlayText.textContent = "Game Over";
+    overlay.textContent = "Game Over — hold to restart";
     overlay.style.display = "flex";
   }
 
-  function update() {
-    if (!started || !alive) return;
+  function spawnObstacle() {
+    const gap = 160;
+    const topH = Math.random() * 200 + 40;
+    const bottomH = H - topH - gap;
 
-    velocity += gravity;
-    if (holding) velocity += lift;
+    const top = document.createElement("div");
+    top.className = "obstacle";
+    top.style.height = topH + "px";
+    top.style.top = "0";
 
-    y += velocity;
+    const bottom = document.createElement("div");
+    bottom.className = "obstacle";
+    bottom.style.height = bottomH + "px";
+    bottom.style.bottom = "0";
 
-    if (y <= 0 || y + PLAYER_SIZE >= GAME_HEIGHT) {
+    game.appendChild(top);
+    game.appendChild(bottom);
+
+    obstacles.push({ top, bottom, x: game.clientWidth });
+  }
+
+  function loop() {
+    if (!alive) return;
+
+    v += gravity;
+    if (holding) v += lift;
+    y += v;
+
+    if (y <= 0 || y + P >= H) {
       die();
       return;
     }
 
     player.style.top = y + "px";
 
-    obstacleTimer++;
-    if (obstacleTimer > 120) {
-      createObstacle();
-      obstacleTimer = 0;
+    timer++;
+    if (timer > 120) {
+      spawnObstacle();
+      timer = 0;
     }
 
     obstacles.forEach(o => {
@@ -190,10 +180,10 @@
       o.top.style.left = o.x + "px";
       o.bottom.style.left = o.x + "px";
 
-      if (o.x < 80 + PLAYER_SIZE && o.x + 40 > 80) {
+      if (o.x < 80 + P && o.x + 40 > 80) {
         if (
           y < o.top.offsetHeight ||
-          y + PLAYER_SIZE > GAME_HEIGHT - o.bottom.offsetHeight
+          y + P > H - o.bottom.offsetHeight
         ) {
           die();
         }
@@ -202,19 +192,20 @@
 
     obstacles = obstacles.filter(o => o.x > -50);
 
-    requestAnimationFrame(update);
+    requestAnimationFrame(loop);
   }
 
-  // input
-  document.addEventListener("mousedown", () => holding = true);
-  document.addEventListener("mouseup", () => holding = false);
-  document.addEventListener("touchstart", e => {
-    e.preventDefault();
+  /* INPUT — SOLO SOBRE EL JUEGO */
+  game.addEventListener("pointerdown", () => {
     holding = true;
-  }, { passive: false });
-  document.addEventListener("touchend", () => holding = false);
+    if (!started) start();
+    if (!alive) reset();
+  });
 
-  resetState();
+  game.addEventListener("pointerup", () => holding = false);
+  game.addEventListener("pointerleave", () => holding = false);
+
+  reset();
 </script>
 
 </body>
