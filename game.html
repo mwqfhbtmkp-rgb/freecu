@@ -13,7 +13,6 @@
     font-family: Arial, sans-serif;
   }
 
-  /* LAYOUT */
   .container {
     max-width: 1100px;
     margin: 0 auto;
@@ -43,7 +42,6 @@
     line-height: 1.6;
   }
 
-  /* GAME */
   #game {
     width: 100%;
     max-width: 420px;
@@ -79,13 +77,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    pointer-events: none;
     text-align: center;
     padding: 20px;
+    font-size: 16px;
+    pointer-events: none;
   }
 
-  /* PC LAYOUT */
   @media (min-width: 900px) {
     .container {
       flex-direction: row;
@@ -112,13 +109,11 @@
   <div class="left">
     <h1>FREECU — One Mechanic</h1>
     <p>
-      This game has only one control.<br>
-      Hold to go up. Release to fall.<br><br>
-      Touching the floor or the ceiling ends the run.
+      One control only.<br>
+      Hold to go up. Release to fall.
     </p>
     <p>
-      The rules of this game are unstable.<br>
-      FREECU holders decide what changes next.
+      Touching the floor or the ceiling ends the run.
     </p>
     <p style="font-size:12px;">
       Mouse or touch · Hold to play
@@ -149,10 +144,12 @@
 
   let obstacles = [];
   let timer = 0;
+  let safeTime = 0;
 
-  const gravity = 0.6;
-  const lift = -1.2;
-  const speed = 3;
+  // Difficulty parameters (JUST BUT CRUEL)
+  const gravity = 0.55;
+  const lift = -1.0;
+  let speed = 2.5;
 
   function reset() {
     y = H / 2 - P / 2;
@@ -160,6 +157,8 @@
     alive = true;
     started = false;
     timer = 0;
+    safeTime = 0;
+    speed = 2.5;
 
     obstacles.forEach(o => {
       o.top.remove();
@@ -187,7 +186,7 @@
 
   function spawnObstacle() {
     const gap = 160;
-    const topH = Math.random() * 200 + 40;
+    const topH = Math.random() * 160 + 60;
     const bottomH = H - topH - gap;
 
     const top = document.createElement("div");
@@ -209,6 +208,8 @@
   function loop() {
     if (!alive) return;
 
+    safeTime++;
+
     v += gravity;
     if (holding) v += lift;
     y += v;
@@ -221,7 +222,7 @@
     player.style.top = y + "px";
 
     timer++;
-    if (timer > 120) {
+    if (timer > 120 && safeTime > 120) {
       spawnObstacle();
       timer = 0;
     }
@@ -243,9 +244,12 @@
 
     obstacles = obstacles.filter(o => o.x > -50);
 
+    speed += 0.0004; // progressive difficulty
+
     requestAnimationFrame(loop);
   }
 
+  // INPUT (PC + MOBILE)
   game.addEventListener("pointerdown", () => {
     holding = true;
     if (!started) start();
