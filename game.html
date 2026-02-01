@@ -6,101 +6,161 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <style>
-  * {
-    box-sizing: border-box;
-    image-rendering: pixelated;
-    user-select: none;
-  }
+*{
+  box-sizing:border-box;
+  image-rendering: pixelated;
+  user-select:none;
+  font-family: Arial, sans-serif;
+}
 
-  body {
-    margin: 0;
-    background: #0b0f1a;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #e5e7eb;
-  }
+body{
+  margin:0;
+  background:#0b0f1a;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:#e5e7eb;
+}
 
-  #game {
-    width: 1000px;
-    max-width: 100%;
-    height: 320px;
-    border: 3px solid #2c3145;
-    background: #111827;
-    position: relative;
-    overflow: hidden;
-  }
+#game{
+  width:1000px;
+  max-width:100%;
+  height:360px;
+  background:
+    linear-gradient(#0f172a,#020617);
+  border:4px solid #2c3145;
+  position:relative;
+  overflow:hidden;
+}
 
-  /* CITY */
-  #city {
-    position: absolute;
-    right: 80px;
-    bottom: 40px;
-    width: 180px;
-    height: 180px;
-    background:
-      repeating-linear-gradient(
-        0deg,
-        #9ca3af 0px,
-        #9ca3af 6px,
-        #6b7280 6px,
-        #6b7280 12px
-      );
-    border: 4px solid #374151;
-  }
+/* HUD */
+#hud{
+  position:absolute;
+  left:20px;
+  top:20px;
+  font-size:14px;
+  line-height:1.6;
+  z-index:5;
+}
 
-  /* CRACKS */
-  .crack {
-    position: absolute;
-    background: rgba(0,0,0,0.35);
-  }
+.bar{
+  width:220px;
+  height:12px;
+  background:#1f2937;
+  border:1px solid #374151;
+  margin-bottom:6px;
+}
 
-  /* HUD */
-  #hud {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    font-size: 14px;
-    line-height: 1.6;
-  }
+.fill{
+  height:100%;
+  width:100%;
+  background:#22c55e;
+  transition:width .4s;
+}
 
-  .bar {
-    width: 200px;
-    height: 10px;
-    background: #1f2933;
-    margin-top: 4px;
-    border: 1px solid #374151;
-  }
+#status{
+  margin-top:8px;
+  font-weight:bold;
+}
 
-  .fill {
-    height: 100%;
-    background: #22c55e;
-    width: 100%;
-    transition: width 0.3s linear;
-  }
+/* ACTIONS */
+#actions{
+  position:absolute;
+  left:20px;
+  bottom:20px;
+  display:flex;
+  gap:10px;
+}
 
-  #status {
-    margin-top: 12px;
-    color: #facc15;
-  }
+.action{
+  padding:8px 12px;
+  background:#020617;
+  border:1px solid #334155;
+  color:#e5e7eb;
+  font-size:12px;
+  cursor:pointer;
+}
 
-  #overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(11,15,26,0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    text-align: center;
-    padding: 20px;
-  }
+.action:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+}
 
-  #overlay.hidden {
-    display: none;
-  }
+/* CASTLE */
+#castle{
+  position:absolute;
+  right:100px;
+  bottom:40px;
+  width:220px;
+  height:160px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      #9ca3af 0px,
+      #9ca3af 6px,
+      #6b7280 6px,
+      #6b7280 12px
+    );
+  border:4px solid #374151;
+}
+
+/* TOWERS */
+.tower{
+  position:absolute;
+  bottom:100%;
+  width:40px;
+  height:50px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #9ca3af 0px,
+      #9ca3af 4px,
+      #6b7280 4px,
+      #6b7280 8px
+    );
+  border:3px solid #374151;
+}
+
+.tower.left{left:0;}
+.tower.right{right:0;}
+
+/* CRACKS */
+.crack{
+  position:absolute;
+  height:4px;
+  background:rgba(0,0,0,.4);
+}
+
+/* SMOKE */
+.smoke{
+  position:absolute;
+  width:8px;
+  height:8px;
+  background:rgba(255,255,255,0.4);
+  border-radius:50%;
+  animation: smoke 3s linear infinite;
+}
+
+@keyframes smoke{
+  from{transform:translateY(0);opacity:0.6;}
+  to{transform:translateY(-40px);opacity:0;}
+}
+
+/* OVERLAY */
+#overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(2,6,23,0.92);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:18px;
+  text-align:center;
+  z-index:10;
+}
+
+.hidden{display:none;}
 </style>
 </head>
 
@@ -111,100 +171,152 @@
   <div id="hud">
     City Integrity
     <div class="bar"><div id="integrityFill" class="fill"></div></div>
+    Threat Level
+    <div class="bar"><div id="threatFill" class="fill"></div></div>
     <div id="time">Time: 0s</div>
     <div id="status">Status: Stable</div>
   </div>
 
-  <div id="city"></div>
+  <div id="actions">
+    <button id="reinforce" class="action">Reinforce Walls</button>
+    <button id="sacrifice" class="action">Sacrifice Resources</button>
+  </div>
+
+  <div id="castle">
+    <div class="tower left"></div>
+    <div class="tower right"></div>
+  </div>
 
   <div id="overlay">Click to begin</div>
 
 </div>
 
 <script>
-  const overlay = document.getElementById("overlay");
-  const integrityFill = document.getElementById("integrityFill");
-  const statusText = document.getElementById("status");
-  const timeText = document.getElementById("time");
-  const city = document.getElementById("city");
-  const game = document.getElementById("game");
+const overlay = document.getElementById("overlay");
+const integrityFill = document.getElementById("integrityFill");
+const threatFill = document.getElementById("threatFill");
+const statusText = document.getElementById("status");
+const timeText = document.getElementById("time");
+const castle = document.getElementById("castle");
 
-  let integrity = 100;
-  let timeSurvived = 0;
-  let running = false;
-  let crackCount = 0;
+const reinforceBtn = document.getElementById("reinforce");
+const sacrificeBtn = document.getElementById("sacrifice");
 
-  function addCrack() {
-    const crack = document.createElement("div");
-    crack.className = "crack";
-    crack.style.width = Math.random() * 60 + 20 + "px";
-    crack.style.height = "4px";
-    crack.style.left = Math.random() * 140 + 10 + "px";
-    crack.style.top = Math.random() * 140 + 10 + "px";
-    city.appendChild(crack);
+let integrity = 100;
+let threat = 0;
+let time = 0;
+let running = false;
+let cracks = 0;
+let cooldown = false;
+
+function addCrack(){
+  const c = document.createElement("div");
+  c.className="crack";
+  c.style.width=Math.random()*60+20+"px";
+  c.style.left=Math.random()*140+20+"px";
+  c.style.top=Math.random()*100+20+"px";
+  castle.appendChild(c);
+}
+
+function addSmoke(){
+  const s=document.createElement("div");
+  s.className="smoke";
+  s.style.left=Math.random()*180+"px";
+  s.style.bottom="160px";
+  castle.appendChild(s);
+  setTimeout(()=>s.remove(),3000);
+}
+
+function updateStatus(){
+  if(integrity>70){
+    statusText.textContent="Status: Stable";
+    statusText.style.color="#22c55e";
+  }else if(integrity>40){
+    statusText.textContent="Status: Structural damage";
+    statusText.style.color="#facc15";
+  }else if(integrity>15){
+    statusText.textContent="Status: Critical condition";
+    statusText.style.color="#f97316";
+  }else{
+    statusText.textContent="Status: Imminent collapse";
+    statusText.style.color="#ef4444";
   }
+}
 
-  function updateStatus() {
-    if (integrity > 70) {
-      statusText.textContent = "Status: Stable";
-      statusText.style.color = "#22c55e";
-    } else if (integrity > 40) {
-      statusText.textContent = "Status: Structural damage";
-      statusText.style.color = "#facc15";
-    } else if (integrity > 15) {
-      statusText.textContent = "Status: Critical integrity";
-      statusText.style.color = "#f97316";
-    } else {
-      statusText.textContent = "Status: Imminent collapse";
-      statusText.style.color = "#ef4444";
-    }
-  }
+function loop(){
+  if(!running)return;
 
-  function collapse() {
-    running = false;
-    overlay.innerHTML = `The city has collapsed<br><br>Time survived: ${timeSurvived}s`;
+  time++;
+  integrity -= 0.18 + threat*0.02;
+  threat += 0.3;
+
+  integrity=Math.max(0,integrity);
+  threat=Math.min(100,threat);
+
+  integrityFill.style.width=integrity+"%";
+  threatFill.style.width=threat+"%";
+  timeText.textContent="Time: "+time+"s";
+
+  if(integrity<80 && cracks<1){addCrack();cracks++;}
+  if(integrity<60 && cracks<2){addCrack();cracks++;}
+  if(integrity<40 && cracks<3){addCrack();cracks++;}
+  if(integrity<25 && cracks<4){addCrack();cracks++;addSmoke();}
+  if(integrity<15){addSmoke();}
+
+  updateStatus();
+
+  if(integrity<=0){
+    running=false;
+    overlay.innerHTML=`The city has collapsed<br><br>Time survived: ${time}s`;
     overlay.classList.remove("hidden");
+    return;
   }
 
-  function loop() {
-    if (!running) return;
+  setTimeout(loop,1000);
+}
 
-    integrity -= 0.15;
-    timeSurvived++;
-    integrity = Math.max(0, integrity);
+function start(){
+  integrity=100;
+  threat=0;
+  time=0;
+  cracks=0;
+  castle.innerHTML='<div class="tower left"></div><div class="tower right"></div>';
+  integrityFill.style.width="100%";
+  threatFill.style.width="0%";
+  statusText.textContent="Status: Stable";
+  overlay.classList.add("hidden");
+  running=true;
+  loop();
+}
 
-    integrityFill.style.width = integrity + "%";
-    timeText.textContent = "Time: " + timeSurvived + "s";
+reinforceBtn.onclick=()=>{
+  if(cooldown||!running)return;
+  integrity=Math.min(100,integrity+12);
+  threat+=6;
+  cooldownAction();
+};
 
-    if (integrity < 80 && crackCount < 1) { addCrack(); crackCount++; }
-    if (integrity < 60 && crackCount < 2) { addCrack(); crackCount++; }
-    if (integrity < 40 && crackCount < 3) { addCrack(); crackCount++; }
-    if (integrity < 25 && crackCount < 4) { addCrack(); crackCount++; }
-    if (integrity < 10 && crackCount < 6) { addCrack(); crackCount++; }
+sacrificeBtn.onclick=()=>{
+  if(cooldown||!running)return;
+  threat=Math.max(0,threat-12);
+  integrity-=8;
+  cooldownAction();
+};
 
-    updateStatus();
+function cooldownAction(){
+  cooldown=true;
+  reinforceBtn.disabled=true;
+  sacrificeBtn.disabled=true;
+  setTimeout(()=>{
+    cooldown=false;
+    reinforceBtn.disabled=false;
+    sacrificeBtn.disabled=false;
+  },4000);
+}
 
-    if (integrity <= 0) {
-      collapse();
-      return;
-    }
-
-    setTimeout(loop, 1000);
-  }
-
-  game.addEventListener("pointerdown", () => {
-    if (!running) {
-      integrity = 100;
-      timeSurvived = 0;
-      crackCount = 0;
-      city.innerHTML = "";
-      integrityFill.style.width = "100%";
-      statusText.textContent = "Status: Stable";
-      overlay.classList.add("hidden");
-      running = true;
-      loop();
-    }
-  });
+document.getElementById("game").addEventListener("pointerdown",()=>{
+  if(!running)start();
+});
 </script>
 
 </body>
