@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FREECU — The Last City (Prototype)</title>
+<title>FREECU — The Last City</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <style>
   * {
     box-sizing: border-box;
+    image-rendering: pixelated;
     user-select: none;
     -webkit-user-select: none;
   }
 
   body {
     margin: 0;
-    background: #020617;
-    color: #e5e7eb;
+    background: #0b0f1a;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
@@ -27,56 +27,69 @@
     width: 1000px;
     max-width: 100%;
     height: 260px;
-    border: 1px solid #0f172a;
-    background: #020617;
     position: relative;
     overflow: hidden;
-    padding-left: 40px;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        #1a1f2e 0px,
+        #1a1f2e 6px,
+        #141927 6px,
+        #141927 12px
+      );
+    border: 3px solid #2c3145;
   }
 
-  /* ENEMY */
+  /* ===== ENEMY (STONE) ===== */
   .enemy {
     width: 28px;
     height: 28px;
-    background: #e5e7eb;
     position: absolute;
     bottom: 40px;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        #5b5b5b 0px,
+        #5b5b5b 4px,
+        #444 4px,
+        #444 8px
+      );
+    border: 2px solid #2a2a2a;
   }
 
-  /* GUARD */
+  /* ===== GUARD (IRON) ===== */
   .guard {
-    width: 30px;
-    height: 50px;
-    background: #22c55e;
+    width: 32px;
+    height: 52px;
     position: absolute;
     bottom: 40px;
-    border-radius: 6px;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        #9ca3af 0px,
+        #9ca3af 4px,
+        #6b7280 4px,
+        #6b7280 8px
+      );
+    border: 2px solid #374151;
   }
 
-  /* CITY */
-  #city {
-    position: absolute;
-    right: 60px;
-    bottom: 20px;
-    width: 120px;
-    height: 120px;
-    border: 2px solid #334155;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #94a3b8;
-    font-size: 12px;
-  }
-
-  /* KING */
+  /* ===== KING (GOLD) ===== */
   #king {
     position: absolute;
     right: 200px;
     bottom: 30px;
     width: 40px;
     height: 80px;
-    background: #22c55e;
-    border-radius: 6px 6px 10px 10px;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        #facc15 0px,
+        #facc15 4px,
+        #eab308 4px,
+        #eab308 8px
+      );
+    border: 2px solid #854d0e;
   }
 
   #king::after {
@@ -86,21 +99,46 @@
     left: 8px;
     width: 24px;
     height: 14px;
-    background: #22c55e;
-    border-radius: 6px 6px 0 0;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        #fde047 0px,
+        #fde047 4px,
+        #facc15 4px,
+        #facc15 8px
+      );
+    border: 2px solid #854d0e;
   }
 
-  /* OVERLAY */
+  /* ===== CITY (STONE WALL) ===== */
+  #city {
+    position: absolute;
+    right: 60px;
+    bottom: 20px;
+    width: 120px;
+    height: 120px;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        #9ca3af 0px,
+        #9ca3af 6px,
+        #6b7280 6px,
+        #6b7280 12px
+      );
+    border: 3px solid #374151;
+  }
+
+  /* ===== OVERLAY ===== */
   #overlay {
     position: absolute;
     inset: 0;
-    background: rgba(2,6,23,0.9);
+    background: rgba(11,15,26,0.9);
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #e5e7eb;
     font-size: 16px;
     text-align: center;
-    padding: 20px;
   }
 
   #overlay.hidden {
@@ -112,7 +150,7 @@
     left: 20px;
     bottom: 10px;
     font-size: 13px;
-    color: #94a3b8;
+    color: #9ca3af;
   }
 </style>
 </head>
@@ -121,8 +159,8 @@
 
 <div id="game">
   <div id="king"></div>
-  <div id="city">CITY</div>
-  <div id="overlay">Click anywhere to begin<br><br>Click on the field to deploy your guard</div>
+  <div id="city"></div>
+  <div id="overlay">Click to begin<br><br>Click field to deploy guard</div>
   <div id="info">Guard: READY</div>
 </div>
 
@@ -134,7 +172,6 @@
 
   let enemies = [];
   let guard = null;
-
   let running = false;
   let spawnTimer = 0;
 
@@ -156,7 +193,7 @@
 
     guard = document.createElement("div");
     guard.className = "guard";
-    guard.x = x - 15;
+    guard.x = x - 16;
     guard.hp = GUARD_MAX_HP;
     guard.style.left = guard.x + "px";
     game.appendChild(guard);
@@ -195,30 +232,20 @@
 
     if (guardCooldown > 0) {
       guardCooldown--;
-      if (guardCooldown === 0) {
-        info.textContent = "Guard: READY";
-      }
+      if (guardCooldown === 0) info.textContent = "Guard: READY";
     }
 
     enemies.forEach(e => {
       let blocked = false;
 
       if (guard) {
-        const guardRect = guard.getBoundingClientRect();
-        const enemyRect = e.getBoundingClientRect();
-
-        if (enemyRect.right >= guardRect.left) {
+        if (e.x + 28 >= guard.x) {
           blocked = true;
           e.hp--;
           guard.hp--;
 
-          if (guard.hp <= 0) {
-            destroyGuard();
-          }
-
-          if (e.hp <= 0) {
-            e.remove();
-          }
+          if (guard.hp <= 0) destroyGuard();
+          if (e.hp <= 0) e.remove();
         }
       }
 
@@ -227,10 +254,7 @@
         e.style.left = e.x + "px";
       }
 
-      const cityRect = city.getBoundingClientRect();
-      const enemyRect = e.getBoundingClientRect();
-
-      if (enemyRect.right >= cityRect.left) {
+      if (e.getBoundingClientRect().right >= city.getBoundingClientRect().left) {
         gameOver();
       }
     });
@@ -240,7 +264,7 @@
     requestAnimationFrame(loop);
   }
 
-  game.addEventListener("pointerdown", (e) => {
+  game.addEventListener("pointerdown", e => {
     e.preventDefault();
 
     if (!running) {
@@ -255,9 +279,7 @@
     }
 
     const rect = game.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-
-    deployGuard(x);
+    deployGuard(e.clientX - rect.left);
   });
 </script>
 
