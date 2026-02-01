@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>FREECU — Last Stand Tower</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{
@@ -39,20 +39,11 @@ body{
   top:15px;
   left:15px;
   font-size:14px;
-  z-index:10;
+  z-index:5;
 }
 
-#log{
-  margin-top:8px;
-  font-size:12px;
-  color:#f97316;
-}
-
-#lost{
-  margin-top:4px;
-  font-size:12px;
-  color:#ef4444;
-}
+#log{font-size:12px;color:#f97316;margin-top:6px;}
+#lost{font-size:12px;color:#ef4444;}
 
 /* SLOTS */
 #slots{
@@ -115,13 +106,14 @@ body{
 #overlay{
   position:absolute;
   inset:0;
-  background:rgba(2,6,23,.9);
+  background:rgba(2,6,23,.92);
   display:flex;
   justify-content:center;
   align-items:center;
   text-align:center;
   font-size:18px;
   z-index:20;
+  cursor:pointer;
 }
 
 .hidden{display:none;}
@@ -145,7 +137,6 @@ body{
 </div>
 
 <script>
-const game = document.getElementById("game");
 const overlay = document.getElementById("overlay");
 const slotsContainer = document.getElementById("slots");
 const lostCountEl = document.getElementById("lostCount");
@@ -168,8 +159,6 @@ function createSlots(){
     slotsContainer.appendChild(s);
     slots.push(s);
   }
-
-  // place 3 initial towers
   [0,2,4].forEach(i=>addTower(slots[i]));
 }
 
@@ -186,7 +175,7 @@ function spawnEnemy(){
   e.className="enemy";
   e.x=-30;
   e.hp=3;
-  game.appendChild(e);
+  document.getElementById("game").appendChild(e);
   enemies.push(e);
 }
 
@@ -200,22 +189,20 @@ function towerLost(slot){
 
   const flash=document.createElement("div");
   flash.className="flash";
-  game.appendChild(flash);
+  document.getElementById("game").appendChild(flash);
   setTimeout(()=>flash.remove(),300);
 
-  if(slots.every(s=>!s.tower)){
-    gameOver();
-  }
+  if(slots.every(s=>!s.tower)) gameOver();
 }
 
 function gameOver(){
   running=false;
-  overlay.innerHTML=`No defenses remain<br><br>Towers lost: ${lostCount}`;
+  overlay.innerHTML=`No defenses remain<br><br>Towers lost: ${lostCount}<br><br>Click to restart`;
   overlay.classList.remove("hidden");
 }
 
 function loop(){
-  if(!running)return;
+  if(!running) return;
 
   spawnTimer++;
   if(spawnTimer>120){
@@ -227,15 +214,15 @@ function loop(){
     let blocked=false;
 
     slots.forEach(s=>{
-      if(!s.tower||blocked)return;
+      if(!s.tower||blocked) return;
       const sRect=s.getBoundingClientRect();
       const eRect=e.getBoundingClientRect();
       if(eRect.right>=sRect.left){
         blocked=true;
         s.tower.hp--;
         e.hp--;
-        if(s.tower.hp<=0)towerLost(s);
-        if(e.hp<=0)e.remove();
+        if(s.tower.hp<=0) towerLost(s);
+        if(e.hp<=0) e.remove();
       }
     });
 
@@ -246,24 +233,21 @@ function loop(){
   });
 
   enemies=enemies.filter(e=>e.isConnected);
-
   requestAnimationFrame(loop);
 }
 
-game.addEventListener("pointerdown",()=>{
-  if(!running){
-    lostCount=0;
-    lostCountEl.textContent="0";
-    logEl.textContent="";
-    lostEl.textContent="";
-    enemies.forEach(e=>e.remove());
-    enemies=[];
-    spawnTimer=0;
-    createSlots();
-    overlay.classList.add("hidden");
-    running=true;
-    loop();
-  }
+overlay.addEventListener("click",()=>{
+  lostCount=0;
+  lostCountEl.textContent="0";
+  logEl.textContent="";
+  lostEl.textContent="";
+  enemies.forEach(e=>e.remove());
+  enemies=[];
+  spawnTimer=0;
+  createSlots();
+  overlay.classList.add("hidden");
+  running=true;
+  loop();
 });
 </script>
 
