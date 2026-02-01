@@ -2,17 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FREECU – One Mechanic</title>
-
-<meta name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FREECU — The Last City (Prototype)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <style>
   * {
     box-sizing: border-box;
-    -webkit-user-select: none;
     user-select: none;
-    -webkit-touch-callout: none;
+    -webkit-user-select: none;
   }
 
   body {
@@ -20,68 +17,71 @@
     background: #020617;
     color: #e5e7eb;
     font-family: Arial, sans-serif;
-    overscroll-behavior: none;
-  }
-
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .left {
-    text-align: center;
-  }
-
-  .right {
     display: flex;
     justify-content: center;
-  }
-
-  h1 {
-    font-size: 26px;
-    margin-bottom: 10px;
-  }
-
-  p {
-    font-size: 14px;
-    color: #94a3b8;
-    line-height: 1.6;
+    align-items: center;
+    height: 100vh;
   }
 
   #game {
-    width: 100%;
-    max-width: 420px;
-    height: 600px;
-    background: #020617;
+    width: 1000px;
+    max-width: 100%;
+    height: 260px;
     border: 1px solid #0f172a;
-    border-radius: 12px;
+    background: #020617;
     position: relative;
     overflow: hidden;
-
-    touch-action: none;     /* 🔴 CLAVE */
-    outline: none;
+    padding-left: 40px;
   }
 
-  #player {
-    width: 26px;
-    height: 26px;
-    background: #22c55e;
-    border-radius: 6px;
-    position: absolute;
-    left: 80px;
-    top: 50%;
-  }
-
-  .obstacle {
-    width: 40px;
+  /* ENEMY */
+  .enemy {
+    width: 28px;
+    height: 28px;
     background: #e5e7eb;
     position: absolute;
+    left: -40px;
+    bottom: 40px;
   }
 
+  /* CITY */
+  #city {
+    position: absolute;
+    right: 80px;
+    bottom: 20px;
+    width: 120px;
+    height: 120px;
+    border: 2px solid #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+
+  /* KING */
+  #king {
+    position: absolute;
+    right: 220px;
+    bottom: 30px;
+    width: 40px;
+    height: 80px;
+    background: #22c55e;
+    border-radius: 6px 6px 10px 10px;
+  }
+
+  #king::after {
+    content: "";
+    position: absolute;
+    top: -14px;
+    left: 8px;
+    width: 24px;
+    height: 14px;
+    background: #22c55e;
+    border-radius: 6px 6px 0 0;
+  }
+
+  /* OVERLAY */
   #overlay {
     position: absolute;
     inset: 0;
@@ -89,193 +89,89 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 20px;
     font-size: 16px;
-    pointer-events: none;
+    text-align: center;
   }
 
-  @media (min-width: 900px) {
-    .container {
-      flex-direction: row;
-      align-items: center;
-    }
-
-    .left {
-      flex: 1;
-      text-align: left;
-      padding-right: 40px;
-    }
-
-    .right {
-      flex: 0 0 420px;
-    }
+  #overlay.hidden {
+    display: none;
   }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-  <div class="left">
-    <h1>FREECU — One Mechanic</h1>
-    <p>
-      One control only.<br>
-      Hold to go up. Release to fall.
-    </p>
-    <p>
-      Touching floor or ceiling ends the run.
-    </p>
-    <p style="font-size:12px;">
-      Mouse or touch · Hold inside the game
-    </p>
-  </div>
-
-  <div class="right">
-    <div id="game" tabindex="-1">
-      <div id="player"></div>
-      <div id="overlay">Hold to start</div>
-    </div>
-  </div>
-
+<div id="game">
+  <div id="king"></div>
+  <div id="city">CITY</div>
+  <div id="overlay">Hold click or touch to begin</div>
 </div>
 
 <script>
   const game = document.getElementById("game");
-  const player = document.getElementById("player");
   const overlay = document.getElementById("overlay");
+  const city = document.getElementById("city");
 
-  const H = 600;
-  const P = 26;
+  let enemies = [];
+  let running = false;
+  let spawnTimer = 0;
 
-  let y, v;
-  let holding = false;
-  let alive = false;
-  let started = false;
-
-  let obstacles = [];
-  let timer = 0;
-  let safeTime = 0;
-
-  /* 🔥 HARDER BUT FAIR */
-  const gravity = 0.75;
-  const lift = -1.05;
-  let speed = 3.0;
-  let gap = 150;
-
-  function reset() {
-    y = H / 2 - P / 2;
-    v = 0;
-    alive = true;
-    started = false;
-    timer = 0;
-    safeTime = 0;
-    speed = 3.0;
-    gap = 150;
-
-    obstacles.forEach(o => {
-      o.top.remove();
-      o.bottom.remove();
-    });
-    obstacles = [];
-
-    player.style.top = y + "px";
-    overlay.textContent = "Hold to start";
-    overlay.style.display = "flex";
+  function spawnEnemy() {
+    const e = document.createElement("div");
+    e.className = "enemy";
+    e.x = -40;
+    game.appendChild(e);
+    enemies.push(e);
   }
 
   function start() {
-    if (started) return;
-    started = true;
-    overlay.style.display = "none";
+    if (running) return;
+    running = true;
+    overlay.classList.add("hidden");
     requestAnimationFrame(loop);
   }
 
-  function die() {
-    alive = false;
-    overlay.textContent = "Game Over — hold to restart";
-    overlay.style.display = "flex";
-  }
-
-  function spawnObstacle() {
-    const topH = Math.random() * 140 + 70;
-    const bottomH = H - topH - gap;
-
-    const top = document.createElement("div");
-    top.className = "obstacle";
-    top.style.height = topH + "px";
-    top.style.top = "0";
-
-    const bottom = document.createElement("div");
-    bottom.className = "obstacle";
-    bottom.style.height = bottomH + "px";
-    bottom.style.bottom = "0";
-
-    game.appendChild(top);
-    game.appendChild(bottom);
-
-    obstacles.push({ top, bottom, x: game.clientWidth });
+  function gameOver() {
+    running = false;
+    overlay.textContent = "The city has fallen";
+    overlay.classList.remove("hidden");
   }
 
   function loop() {
-    if (!alive) return;
+    if (!running) return;
 
-    safeTime++;
-
-    v += gravity;
-    if (holding) v += lift;
-    y += v;
-
-    if (y <= 0 || y + P >= H) {
-      die();
-      return;
+    spawnTimer++;
+    if (spawnTimer > 120) {
+      spawnEnemy();
+      spawnTimer = 0;
     }
 
-    player.style.top = y + "px";
+    enemies.forEach(e => {
+      e.x += 1.2;
+      e.style.left = e.x + "px";
 
-    timer++;
-    if (timer > 100 && safeTime > 80) {
-      spawnObstacle();
-      timer = 0;
-    }
+      const cityRect = city.getBoundingClientRect();
+      const enemyRect = e.getBoundingClientRect();
 
-    obstacles.forEach(o => {
-      o.x -= speed;
-      o.top.style.left = o.x + "px";
-      o.bottom.style.left = o.x + "px";
-
-      if (o.x < 80 + P && o.x + 40 > 80) {
-        if (
-          y < o.top.offsetHeight ||
-          y + P > H - o.bottom.offsetHeight
-        ) {
-          die();
-        }
+      if (enemyRect.right >= cityRect.left) {
+        gameOver();
       }
     });
 
-    obstacles = obstacles.filter(o => o.x > -50);
-
-    speed += 0.0008;  // faster ramp
-    gap -= 0.003;     // slowly tighter
+    enemies = enemies.filter(e => e.x < game.offsetWidth);
 
     requestAnimationFrame(loop);
   }
 
-  /* INPUT — SINGLE SOURCE */
   game.addEventListener("pointerdown", (e) => {
     e.preventDefault();
-    holding = true;
-    if (!started) start();
-    if (!alive) reset();
+    if (!running) {
+      enemies.forEach(en => en.remove());
+      enemies = [];
+      spawnTimer = 0;
+      start();
+    }
   });
-
-  game.addEventListener("pointerup", () => holding = false);
-  game.addEventListener("pointercancel", () => holding = false);
-  game.addEventListener("pointerleave", () => holding = false);
-
-  reset();
 </script>
 
 </body>
