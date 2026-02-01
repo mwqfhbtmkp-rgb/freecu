@@ -40,14 +40,23 @@
     height: 28px;
     background: #e5e7eb;
     position: absolute;
-    left: -40px;
     bottom: 40px;
+  }
+
+  /* GUARD */
+  .guard {
+    width: 30px;
+    height: 50px;
+    background: #22c55e;
+    position: absolute;
+    bottom: 40px;
+    border-radius: 6px;
   }
 
   /* CITY */
   #city {
     position: absolute;
-    right: 80px;
+    right: 60px;
     bottom: 20px;
     width: 120px;
     height: 120px;
@@ -62,7 +71,7 @@
   /* KING */
   #king {
     position: absolute;
-    right: 220px;
+    right: 200px;
     bottom: 30px;
     width: 40px;
     height: 80px;
@@ -91,10 +100,19 @@
     justify-content: center;
     font-size: 16px;
     text-align: center;
+    padding: 20px;
   }
 
   #overlay.hidden {
     display: none;
+  }
+
+  #info {
+    position: absolute;
+    left: 20px;
+    bottom: 10px;
+    font-size: 13px;
+    color: #94a3b8;
   }
 </style>
 </head>
@@ -104,28 +122,57 @@
 <div id="game">
   <div id="king"></div>
   <div id="city">CITY</div>
-  <div id="overlay">Hold click or touch to begin</div>
+  <div id="overlay">Click anywhere to begin<br><br>Click on the field to deploy your guard</div>
+  <div id="info">Guard: READY</div>
 </div>
 
 <script>
   const game = document.getElementById("game");
   const overlay = document.getElementById("overlay");
   const city = document.getElementById("city");
+  const info = document.getElementById("info");
 
   let enemies = [];
+  let guard = null;
+
   let running = false;
   let spawnTimer = 0;
+
+  let guardCooldown = 0;
+  const GUARD_MAX_HP = 6;
+  const GUARD_COOLDOWN_TIME = 240;
 
   function spawnEnemy() {
     const e = document.createElement("div");
     e.className = "enemy";
     e.x = -40;
+    e.hp = 3;
     game.appendChild(e);
     enemies.push(e);
   }
 
+  function deployGuard(x) {
+    if (guard || guardCooldown > 0) return;
+
+    guard = document.createElement("div");
+    guard.className = "guard";
+    guard.x = x - 15;
+    guard.hp = GUARD_MAX_HP;
+    guard.style.left = guard.x + "px";
+    game.appendChild(guard);
+
+    info.textContent = "Guard: ACTIVE";
+  }
+
+  function destroyGuard() {
+    if (!guard) return;
+    guard.remove();
+    guard = null;
+    guardCooldown = GUARD_COOLDOWN_TIME;
+    info.textContent = "Guard: COOLDOWN";
+  }
+
   function start() {
-    if (running) return;
     running = true;
     overlay.classList.add("hidden");
     requestAnimationFrame(loop);
@@ -146,9 +193,39 @@
       spawnTimer = 0;
     }
 
+    if (guardCooldown > 0) {
+      guardCooldown--;
+      if (guardCooldown === 0) {
+        info.textContent = "Guard: READY";
+      }
+    }
+
     enemies.forEach(e => {
-      e.x += 1.2;
-      e.style.left = e.x + "px";
+      let blocked = false;
+
+      if (guard) {
+        const guardRect = guard.getBoundingClientRect();
+        const enemyRect = e.getBoundingClientRect();
+
+        if (enemyRect.right >= guardRect.left) {
+          blocked = true;
+          e.hp--;
+          guard.hp--;
+
+          if (guard.hp <= 0) {
+            destroyGuard();
+          }
+
+          if (e.hp <= 0) {
+            e.remove();
+          }
+        }
+      }
+
+      if (!blocked) {
+        e.x += 0.8;
+        e.style.left = e.x + "px";
+      }
 
       const cityRect = city.getBoundingClientRect();
       const enemyRect = e.getBoundingClientRect();
@@ -158,19 +235,29 @@
       }
     });
 
-    enemies = enemies.filter(e => e.x < game.offsetWidth);
+    enemies = enemies.filter(e => e.isConnected);
 
     requestAnimationFrame(loop);
   }
 
   game.addEventListener("pointerdown", (e) => {
     e.preventDefault();
+
     if (!running) {
       enemies.forEach(en => en.remove());
       enemies = [];
+      destroyGuard();
+      guardCooldown = 0;
+      info.textContent = "Guard: READY";
       spawnTimer = 0;
       start();
+      return;
     }
+
+    const rect = game.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+
+    deployGuard(x);
   });
 </script>
 
