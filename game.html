@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FREECU — The City That Breaks</title>
+<title>FREECU — Last Stand Tower</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <style>
 *{
   box-sizing:border-box;
-  image-rendering: pixelated;
   user-select:none;
-  font-family: Arial, sans-serif;
+  image-rendering:pixelated;
+  font-family:Arial, sans-serif;
 }
 
 body{
@@ -26,10 +26,9 @@ body{
 #game{
   width:1000px;
   max-width:100%;
-  height:360px;
-  background:
-    linear-gradient(#0f172a,#020617);
-  border:4px solid #2c3145;
+  height:300px;
+  background:linear-gradient(#020617,#0f172a);
+  border:3px solid #2c3145;
   position:relative;
   overflow:hidden;
 }
@@ -37,80 +36,44 @@ body{
 /* HUD */
 #hud{
   position:absolute;
-  left:20px;
-  top:20px;
+  top:15px;
+  left:15px;
   font-size:14px;
-  line-height:1.6;
-  z-index:5;
+  z-index:10;
 }
 
-.bar{
-  width:220px;
-  height:12px;
-  background:#1f2937;
-  border:1px solid #374151;
-  margin-bottom:6px;
-}
-
-.fill{
-  height:100%;
-  width:100%;
-  background:#22c55e;
-  transition:width .4s;
-}
-
-#status{
+#log{
   margin-top:8px;
-  font-weight:bold;
-}
-
-/* ACTIONS */
-#actions{
-  position:absolute;
-  left:20px;
-  bottom:20px;
-  display:flex;
-  gap:10px;
-}
-
-.action{
-  padding:8px 12px;
-  background:#020617;
-  border:1px solid #334155;
-  color:#e5e7eb;
   font-size:12px;
-  cursor:pointer;
+  color:#f97316;
 }
 
-.action:disabled{
-  opacity:0.4;
-  cursor:not-allowed;
+#lost{
+  margin-top:4px;
+  font-size:12px;
+  color:#ef4444;
 }
 
-/* CASTLE */
-#castle{
+/* SLOTS */
+#slots{
   position:absolute;
-  right:100px;
-  bottom:40px;
-  width:220px;
-  height:160px;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      #9ca3af 0px,
-      #9ca3af 6px,
-      #6b7280 6px,
-      #6b7280 12px
-    );
-  border:4px solid #374151;
+  bottom:60px;
+  left:120px;
+  display:flex;
+  gap:60px;
 }
 
-/* TOWERS */
+.slot{
+  width:34px;
+  height:34px;
+  border:2px dashed #334155;
+  position:relative;
+}
+
+/* TOWER */
 .tower{
-  position:absolute;
-  bottom:100%;
-  width:40px;
-  height:50px;
+  width:34px;
+  height:60px;
   background:
     repeating-linear-gradient(
       90deg,
@@ -119,45 +82,46 @@ body{
       #6b7280 4px,
       #6b7280 8px
     );
-  border:3px solid #374151;
-}
-
-.tower.left{left:0;}
-.tower.right{right:0;}
-
-/* CRACKS */
-.crack{
+  border:2px solid #374151;
   position:absolute;
-  height:4px;
-  background:rgba(0,0,0,.4);
+  bottom:0;
+  left:-2px;
 }
 
-/* SMOKE */
-.smoke{
+/* ENEMY */
+.enemy{
+  width:24px;
+  height:24px;
+  background:#dc2626;
   position:absolute;
-  width:8px;
-  height:8px;
-  background:rgba(255,255,255,0.4);
-  border-radius:50%;
-  animation: smoke 3s linear infinite;
+  bottom:60px;
 }
 
-@keyframes smoke{
-  from{transform:translateY(0);opacity:0.6;}
-  to{transform:translateY(-40px);opacity:0;}
+/* FLASH */
+.flash{
+  position:absolute;
+  inset:0;
+  background:rgba(239,68,68,0.25);
+  pointer-events:none;
+  animation:flash .3s ease;
+}
+
+@keyframes flash{
+  from{opacity:1;}
+  to{opacity:0;}
 }
 
 /* OVERLAY */
 #overlay{
   position:absolute;
   inset:0;
-  background:rgba(2,6,23,0.92);
+  background:rgba(2,6,23,.9);
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:18px;
   text-align:center;
-  z-index:10;
+  font-size:18px;
+  z-index:20;
 }
 
 .hidden{display:none;}
@@ -169,153 +133,137 @@ body{
 <div id="game">
 
   <div id="hud">
-    City Integrity
-    <div class="bar"><div id="integrityFill" class="fill"></div></div>
-    Threat Level
-    <div class="bar"><div id="threatFill" class="fill"></div></div>
-    <div id="time">Time: 0s</div>
-    <div id="status">Status: Stable</div>
+    Towers lost: <span id="lostCount">0</span>
+    <div id="log"></div>
+    <div id="lost"></div>
   </div>
 
-  <div id="actions">
-    <button id="reinforce" class="action">Reinforce Walls</button>
-    <button id="sacrifice" class="action">Sacrifice Resources</button>
-  </div>
-
-  <div id="castle">
-    <div class="tower left"></div>
-    <div class="tower right"></div>
-  </div>
+  <div id="slots"></div>
 
   <div id="overlay">Click to begin</div>
 
 </div>
 
 <script>
+const game = document.getElementById("game");
 const overlay = document.getElementById("overlay");
-const integrityFill = document.getElementById("integrityFill");
-const threatFill = document.getElementById("threatFill");
-const statusText = document.getElementById("status");
-const timeText = document.getElementById("time");
-const castle = document.getElementById("castle");
+const slotsContainer = document.getElementById("slots");
+const lostCountEl = document.getElementById("lostCount");
+const logEl = document.getElementById("log");
+const lostEl = document.getElementById("lost");
 
-const reinforceBtn = document.getElementById("reinforce");
-const sacrificeBtn = document.getElementById("sacrifice");
+let slots=[];
+let enemies=[];
+let running=false;
+let spawnTimer=0;
+let lostCount=0;
 
-let integrity = 100;
-let threat = 0;
-let time = 0;
-let running = false;
-let cracks = 0;
-let cooldown = false;
-
-function addCrack(){
-  const c = document.createElement("div");
-  c.className="crack";
-  c.style.width=Math.random()*60+20+"px";
-  c.style.left=Math.random()*140+20+"px";
-  c.style.top=Math.random()*100+20+"px";
-  castle.appendChild(c);
-}
-
-function addSmoke(){
-  const s=document.createElement("div");
-  s.className="smoke";
-  s.style.left=Math.random()*180+"px";
-  s.style.bottom="160px";
-  castle.appendChild(s);
-  setTimeout(()=>s.remove(),3000);
-}
-
-function updateStatus(){
-  if(integrity>70){
-    statusText.textContent="Status: Stable";
-    statusText.style.color="#22c55e";
-  }else if(integrity>40){
-    statusText.textContent="Status: Structural damage";
-    statusText.style.color="#facc15";
-  }else if(integrity>15){
-    statusText.textContent="Status: Critical condition";
-    statusText.style.color="#f97316";
-  }else{
-    statusText.textContent="Status: Imminent collapse";
-    statusText.style.color="#ef4444";
+function createSlots(){
+  slotsContainer.innerHTML="";
+  slots=[];
+  for(let i=0;i<5;i++){
+    const s=document.createElement("div");
+    s.className="slot";
+    s.tower=null;
+    slotsContainer.appendChild(s);
+    slots.push(s);
   }
+
+  // place 3 initial towers
+  [0,2,4].forEach(i=>addTower(slots[i]));
+}
+
+function addTower(slot){
+  const t=document.createElement("div");
+  t.className="tower";
+  t.hp=6;
+  slot.appendChild(t);
+  slot.tower=t;
+}
+
+function spawnEnemy(){
+  const e=document.createElement("div");
+  e.className="enemy";
+  e.x=-30;
+  e.hp=3;
+  game.appendChild(e);
+  enemies.push(e);
+}
+
+function towerLost(slot){
+  slot.tower.remove();
+  slot.tower=null;
+  lostCount++;
+  lostCountEl.textContent=lostCount;
+  logEl.textContent="A tower has fallen";
+  lostEl.textContent="Permanent loss";
+
+  const flash=document.createElement("div");
+  flash.className="flash";
+  game.appendChild(flash);
+  setTimeout(()=>flash.remove(),300);
+
+  if(slots.every(s=>!s.tower)){
+    gameOver();
+  }
+}
+
+function gameOver(){
+  running=false;
+  overlay.innerHTML=`No defenses remain<br><br>Towers lost: ${lostCount}`;
+  overlay.classList.remove("hidden");
 }
 
 function loop(){
   if(!running)return;
 
-  time++;
-  integrity -= 0.18 + threat*0.02;
-  threat += 0.3;
-
-  integrity=Math.max(0,integrity);
-  threat=Math.min(100,threat);
-
-  integrityFill.style.width=integrity+"%";
-  threatFill.style.width=threat+"%";
-  timeText.textContent="Time: "+time+"s";
-
-  if(integrity<80 && cracks<1){addCrack();cracks++;}
-  if(integrity<60 && cracks<2){addCrack();cracks++;}
-  if(integrity<40 && cracks<3){addCrack();cracks++;}
-  if(integrity<25 && cracks<4){addCrack();cracks++;addSmoke();}
-  if(integrity<15){addSmoke();}
-
-  updateStatus();
-
-  if(integrity<=0){
-    running=false;
-    overlay.innerHTML=`The city has collapsed<br><br>Time survived: ${time}s`;
-    overlay.classList.remove("hidden");
-    return;
+  spawnTimer++;
+  if(spawnTimer>120){
+    spawnEnemy();
+    spawnTimer=0;
   }
 
-  setTimeout(loop,1000);
+  enemies.forEach(e=>{
+    let blocked=false;
+
+    slots.forEach(s=>{
+      if(!s.tower||blocked)return;
+      const sRect=s.getBoundingClientRect();
+      const eRect=e.getBoundingClientRect();
+      if(eRect.right>=sRect.left){
+        blocked=true;
+        s.tower.hp--;
+        e.hp--;
+        if(s.tower.hp<=0)towerLost(s);
+        if(e.hp<=0)e.remove();
+      }
+    });
+
+    if(!blocked){
+      e.x+=1;
+      e.style.left=e.x+"px";
+    }
+  });
+
+  enemies=enemies.filter(e=>e.isConnected);
+
+  requestAnimationFrame(loop);
 }
 
-function start(){
-  integrity=100;
-  threat=0;
-  time=0;
-  cracks=0;
-  castle.innerHTML='<div class="tower left"></div><div class="tower right"></div>';
-  integrityFill.style.width="100%";
-  threatFill.style.width="0%";
-  statusText.textContent="Status: Stable";
-  overlay.classList.add("hidden");
-  running=true;
-  loop();
-}
-
-reinforceBtn.onclick=()=>{
-  if(cooldown||!running)return;
-  integrity=Math.min(100,integrity+12);
-  threat+=6;
-  cooldownAction();
-};
-
-sacrificeBtn.onclick=()=>{
-  if(cooldown||!running)return;
-  threat=Math.max(0,threat-12);
-  integrity-=8;
-  cooldownAction();
-};
-
-function cooldownAction(){
-  cooldown=true;
-  reinforceBtn.disabled=true;
-  sacrificeBtn.disabled=true;
-  setTimeout(()=>{
-    cooldown=false;
-    reinforceBtn.disabled=false;
-    sacrificeBtn.disabled=false;
-  },4000);
-}
-
-document.getElementById("game").addEventListener("pointerdown",()=>{
-  if(!running)start();
+game.addEventListener("pointerdown",()=>{
+  if(!running){
+    lostCount=0;
+    lostCountEl.textContent="0";
+    logEl.textContent="";
+    lostEl.textContent="";
+    enemies.forEach(e=>e.remove());
+    enemies=[];
+    spawnTimer=0;
+    createSlots();
+    overlay.classList.add("hidden");
+    running=true;
+    loop();
+  }
 });
 </script>
 
